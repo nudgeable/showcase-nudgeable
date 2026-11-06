@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import '@/styles/design/library.css';
+import '@/styles/design/extras.css';
+import { DesignShell } from '@/components/design/DesignShell';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -21,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
-  return (
+  return <DesignShell page="legal">
     <div className="legal-page">
       <div className="container legal-wrap">
         <header className="legal-header">
@@ -33,7 +35,7 @@ export default function PrivacyPage() {
         <article className="blog-body legal-body">
           <p className="lead">
             This Privacy Policy explains how Nudgeable (“we”, “us”, “our”) collects, uses and protects
-            personal information when you visit <Link href="/">nudgeable.ai</Link> or contact us.
+            personal information when you visit <a href="/">nudgeable.ai</a> or contact us.
           </p>
 
           <h2>Who we are</h2>
@@ -144,5 +146,5 @@ export default function PrivacyPage() {
         </article>
       </div>
     </div>
-  );
+  </DesignShell>;
 }

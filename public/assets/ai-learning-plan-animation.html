@@ -1,0 +1,278 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>AI Learning Plan Animation</title>
+<style>
+:root{--bg:#FFFDF5;--ink:#221D23;--muted:#7A7280;--line:#E4DBC2;--chiffon:#FFF6CF;--amber:#FFCE00;
+--found:#623CEA;--work:#23CE6B;--new:#F68A29;--res:#3699FC;--red:#ED4551;--wa:#0B6B57;--wachat:#ECE5DD;
+--font:"Inter",system-ui,-apple-system,sans-serif}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px 16px;box-sizing:border-box}
+.frame{width:100%;max-width:1100px;aspect-ratio:16/9;position:relative;overflow:hidden;background:var(--chiffon);border:1px solid var(--line);border-radius:20px}
+#stage{width:1280px;height:720px;position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden}
+.deco{position:absolute;inset:0;pointer-events:none;z-index:0}
+.deco i{position:absolute;border-radius:50%;display:block}
+.d1{left:1090px;top:-190px;width:300px;height:300px;background:color-mix(in srgb,#3699FC 28%,#FFF6CF)}
+.d2{left:1170px;top:610px;width:220px;height:220px;background:color-mix(in srgb,#ED4551 24%,#FFF6CF)}
+.d3{left:1250px;top:330px;width:64px;height:64px;background:color-mix(in srgb,#23CE6B 35%,#FFF6CF)}
+.d4{left:600px;top:690px;width:100px;height:100px;background:color-mix(in srgb,#F68A29 30%,#FFF6CF)}
+.d5{left:1010px;top:34px;width:26px;height:26px;background:color-mix(in srgb,#623CEA 35%,#FFF6CF)}
+
+/* headline */
+.head{position:absolute;left:70px;top:48px;font-size:50px;font-weight:800;letter-spacing:-.025em;z-index:8;transition:opacity .25s,transform .35s;white-space:nowrap}
+.head.out{opacity:0;transform:translateY(-12px)}
+.head mark{color:inherit;padding:0 7px;margin:0 -5px;border-radius:8px;background:linear-gradient(var(--amber),var(--amber)) no-repeat left/0% 100%;transition:background-size .5s cubic-bezier(.6,0,.2,1) .25s}
+.head.lit mark{background-size:100% 100%}
+.logo{position:absolute;left:70px;bottom:28px;height:34px;z-index:20}
+
+/* chips */
+.chip{position:absolute;left:0;top:0;width:200px;height:58px;z-index:2;transition:transform .75s cubic-bezier(.6,0,.2,1),opacity .45s,width .5s}
+.chip .in{width:100%;height:100%;box-sizing:border-box;border-radius:14px;border:2px solid var(--line);background:#fff;display:flex;align-items:center;gap:10px;padding:0 14px;
+  font-weight:700;font-size:17px;white-space:nowrap;transition:background .3s,box-shadow .3s,border-color .3s,transform .3s}
+.chip .ic{flex:none;width:12px;height:12px;border-radius:50%;background:var(--c);transition:all .3s}
+.chip .tx{display:flex;flex-direction:column;line-height:1.15}
+.chip small{display:none;font-size:12px;font-weight:600;color:var(--muted)}
+.chip.made small{display:block}
+.chip.made .ic{width:0;height:0;border-radius:0;background:none;border-left:11px solid var(--c);border-top:7px solid transparent;border-bottom:7px solid transparent}
+.chip.made .in{animation:flip .5s ease}
+@keyframes flip{50%{transform:rotateX(90deg)}}
+.chip.noise .in{border:2px dashed #CFC6B2;background:#FFFDF5;color:#8A8290;font-style:italic;font-weight:600;justify-content:center}
+.chip.noise .ic{display:none}
+.chaos .chip .in{animation:wob 1.3s ease-in-out infinite alternate}
+.chaos .chip:nth-child(2n) .in{animation-duration:1.6s;animation-delay:-.5s}
+.chaos .chip:nth-child(3n) .in{animation-duration:1.1s;animation-delay:-.3s}
+@keyframes wob{from{transform:translate(-2px,-2px) rotate(-1.5deg)}to{transform:translate(2px,2px) rotate(1.5deg)}}
+.chip.hide{opacity:0!important}
+.chip.planned{width:170px}
+.chip.faded{opacity:.22}
+.chip.picked .in{background:var(--amber);border-color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.chip.picked small{color:#5b4a00}
+.chip.plain .in{background:#fff;border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.num{position:absolute;left:-12px;top:-13px;width:30px;height:30px;border-radius:50%;background:var(--ink);border:2.5px solid var(--chiffon);
+  font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transform:scale(.4);transition:all .3s}
+.planned .num{opacity:1;transform:none}
+.num.done{background:var(--work)}
+.rowlabel{position:absolute;left:70px;font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .4s}
+.rowlabel i{width:14px;height:14px;border-radius:50%;display:block}
+.q{position:absolute;left:585px;top:308px;width:110px;height:110px;border-radius:50%;background:var(--ink);color:#fff;font-size:62px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;z-index:6;transition:opacity .3s,transform .3s}
+.toggle{position:absolute;left:330px;top:122px;display:flex;border:2.5px solid var(--ink);border-radius:999px;overflow:hidden;background:#fff;opacity:0;transform:translateY(-8px);transition:all .3s;z-index:5}
+.toggle span{padding:7px 18px;font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;transition:background .25s}
+.toggle span.on{background:var(--amber)}
+.planlabel{position:absolute;left:70px;top:506px;font-size:15px;font-weight:800;letter-spacing:.2em;color:var(--muted);opacity:0;transition:all .6s cubic-bezier(.6,0,.2,1)}
+.cursor{position:absolute;left:0;top:0;width:36px;height:36px;opacity:0;z-index:15;transition:transform .45s cubic-bezier(.5,0,.3,1),opacity .2s}
+.cursor.tap::after{content:"";position:absolute;left:-14px;top:-14px;width:30px;height:30px;border-radius:50%;border:3px solid var(--found);animation:rip .4s ease-out}
+@keyframes rip{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
+
+/* phone */
+.phone{position:absolute;left:800px;top:128px;width:300px;height:520px;border:4px solid var(--ink);border-radius:38px;background:var(--wachat);overflow:hidden;box-sizing:border-box;z-index:4;
+  box-shadow:8px 8px 0 var(--ink);opacity:0;transform:translateX(60px) scale(.94);transition:all .5s cubic-bezier(.3,1.3,.5,1)}
+.phone.show{opacity:1;transform:none}
+.wahead{height:70px;background:var(--wa);display:flex;align-items:center;gap:10px;padding:14px 16px 0;box-sizing:border-box;color:#fff}
+.av{width:38px;height:38px;border-radius:50%;background:var(--amber);border:2px solid #fff;color:var(--ink);font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center}
+.wahead b{font-size:17px;display:block}.wahead span{font-size:12px;opacity:.85}
+.day{margin:12px auto 4px;width:max-content;background:#fff;border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--muted)}
+.bub{margin:8px 12px 0;background:#fff;border-radius:4px 14px 14px 14px;padding:10px 12px;font-size:14px;font-weight:600;line-height:1.35;opacity:0;transform:translateY(12px);transition:all .35s}
+.bub b{display:block;font-size:19px;font-weight:800;margin-top:2px}
+.bub.on{opacity:1;transform:none}
+.vid{margin:8px 12px 0;height:142px;border-radius:12px;background:var(--ink);position:relative;opacity:0;transform:translateY(12px);transition:all .35s}
+.vid.on{opacity:1;transform:none}
+.vid .pl{position:absolute;left:50%;top:44%;width:52px;height:52px;margin:-26px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center}
+.vid .pl::after{content:"";border-left:16px solid var(--ink);border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.vid .vt{position:absolute;left:12px;bottom:18px;color:#fff;font-size:13px;font-weight:700}
+.vid .vd{position:absolute;right:12px;bottom:18px;color:#fff;font-size:12px;font-weight:700;opacity:.8}
+.pbar{position:absolute;left:12px;right:12px;bottom:8px;height:4px;background:#5A535C;border-radius:2px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--amber)}
+.vid.play .pbar i{width:100%;transition:width 1.3s linear}
+.btn{margin:10px 12px 0;height:44px;border-radius:12px;background:#fff;color:#128C7E;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(12px);transition:all .35s}
+.btn.on{opacity:1;transform:none}.btn.ok{background:var(--work);color:#fff}
+.badge{position:absolute;left:1078px;top:112px;width:38px;height:38px;border-radius:50%;background:var(--red);border:3px solid var(--ink);color:#fff;font-weight:800;font-size:18px;
+  display:flex;align-items:center;justify-content:center;z-index:5;opacity:0;transform:scale(.3);transition:all .3s cubic-bezier(.3,1.6,.5,1)}
+.walab{position:absolute;left:800px;top:664px;width:300px;text-align:center;font-size:15px;font-weight:700;color:var(--muted);opacity:0;transition:opacity .4s;z-index:4}
+.walab b{color:var(--wa);font-size:20px;font-weight:800}
+.pulse{position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;background:var(--amber);border:3px solid var(--ink);opacity:0;z-index:6;transition:transform .7s cubic-bezier(.6,0,.3,1),opacity .2s}
+.show{opacity:1!important;transform:none!important}
+
+/* habit */
+.habit{position:absolute;left:70px;top:170px;opacity:0;transform:translateY(20px);transition:all .5s;z-index:3}
+.hgrid{display:grid;grid-template-columns:96px repeat(7,54px);gap:12px;align-items:center}
+.hgrid .dn{font-size:14px;font-weight:800;color:var(--muted);text-align:center}
+.hgrid .wk{font-size:17px;font-weight:800}
+.sq{width:54px;height:54px;border-radius:12px;border:2.5px dashed #CFC6B2;background:#FFFDF5;box-sizing:border-box;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:800;transition:all .25s}
+.sq.on{background:var(--work);border:2.5px solid var(--ink);transform:scale(1.06)}
+.streak{position:absolute;left:740px;top:200px;width:430px;opacity:0;transform:translateY(20px);transition:all .5s;z-index:3}
+.scard{background:#fff;border:3px solid var(--ink);border-radius:24px;box-shadow:8px 8px 0 var(--ink);padding:26px 30px}
+.scard .k{font-size:15px;font-weight:800;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+.scard .n{font-size:96px;font-weight:800;letter-spacing:-.04em;line-height:1;margin:8px 0 2px}
+.scard .n span{font-size:30px;letter-spacing:-.01em;margin-left:8px}
+.lvl{display:flex;justify-content:space-between;font-size:14px;font-weight:800;margin-top:22px}
+.lbar{height:14px;border-radius:999px;border:2.5px solid var(--ink);background:#FFFDF5;overflow:hidden;margin-top:8px}
+.lbar i{display:block;height:100%;width:0;background:var(--amber);transition:width .2s}
+
+/* end */
+.end{position:absolute;inset:0;background:var(--chiffon);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;opacity:0;pointer-events:none;transition:opacity .5s;z-index:12}
+.end.show{opacity:1}
+.intro{position:absolute;inset:0;background:var(--chiffon);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;z-index:12;transition:opacity .5s}
+.intro.off{opacity:0}
+.intro .big{font-size:120px;font-weight:800;letter-spacing:-.04em;position:relative;z-index:1;opacity:0;transform:translateY(20px);transition:all .5s}
+.intro .big mark{color:inherit;padding:0 16px;margin:0 -6px;border-radius:14px;background:linear-gradient(var(--amber),var(--amber)) no-repeat left/0% 100%;transition:background-size .6s cubic-bezier(.6,0,.2,1)}
+.intro .tag{font-size:34px;font-weight:700;position:relative;z-index:1;opacity:0;transform:translateY(14px);transition:all .5s}
+.intro.a .big{opacity:1;transform:none}.intro.b .big mark{background-size:100% 100%}.intro.c .tag{opacity:1;transform:none}
+.end .big{font-size:86px;font-weight:800;letter-spacing:-.035em;position:relative;z-index:1}
+.end .big mark{color:inherit;background:var(--amber);padding:0 14px;border-radius:12px}
+.end .tag{font-size:32px;font-weight:700;position:relative;z-index:1}
+.end .visit{position:relative;z-index:1;margin-top:14px;background:var(--amber);border:4px solid var(--ink);border-radius:999px;box-shadow:7px 7px 0 var(--ink);padding:16px 44px;font-size:40px;font-weight:600}
+.end .visit b{font-weight:800}
+.end .pill{position:relative;z-index:1;background:var(--amber);border:3px solid var(--ink);border-radius:999px;box-shadow:5px 5px 0 var(--ink);padding:12px 30px;font-weight:800;font-size:18px;letter-spacing:.14em;text-transform:uppercase}
+.controls{display:flex;gap:12px}
+button{font-family:var(--font);font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase;padding:10px 20px;background:var(--amber);color:var(--ink);border:2px solid var(--ink);border-radius:999px;box-shadow:3px 3px 0 var(--ink);cursor:pointer}
+@media (prefers-reduced-motion:reduce){.chaos .chip .in{animation:none}}
+</style><style>html,body{width:100%;height:100%;margin:0;padding:0!important;overflow:hidden}body{display:block}.frame{width:100%;max-width:none;border:0;border-radius:0}.paused *{animation-play-state:paused!important}</style></head><body>
+<div class="frame"><div id="stage">
+  <div class="deco"><i class="d1"></i><i class="d2"></i><i class="d3"></i><i class="d4"></i><i class="d5"></i></div>
+  <div class="head" id="head"></div>
+  <div class="q" id="q">?</div>
+  <div class="toggle" id="toggle"><span id="tYou">You pick</span><span id="tAi">AI builds</span></div>
+  <div class="planlabel" id="planlabel">YOUR AI LEARNING PLAN</div>
+  <div class="pulse" id="pulse"></div>
+  <div class="phone" id="phone">
+    <div class="wahead"><div class="av">n</div><div><b>Nudgeable</b><span>online</span></div></div>
+    <div class="day">TODAY 8:00 AM</div>
+    <div class="bub" id="b1">Good morning! Your 3-min explainer for today:<b>What is MCP?</b></div>
+    <div class="vid" id="vid"><div class="pl"></div><div class="vt">What is MCP?</div><div class="vd">3:00</div><div class="pbar"><i></i></div></div>
+    <div class="btn" id="btn">Mark complete</div>
+  </div>
+  <div class="badge" id="badge">1</div>
+  <div class="walab" id="walab"><b>WhatsApp</b> &nbsp;·&nbsp; also on email</div>
+  <div class="habit" id="habit"><div class="hgrid" id="hgrid"></div></div>
+  <div class="streak" id="streak"><div class="scard">
+    <div class="k">Your learning streak</div>
+    <div class="n"><b id="cnt">0</b><span>days</span></div>
+    <div class="lvl"><span>AI curious</span><span>AI confident</span></div>
+    <div class="lbar"><i id="lbar"></i></div>
+  </div></div>
+  <svg class="cursor" id="cursor" viewBox="0 0 24 24"><path d="M3 2 L3 20 L8 15 L11 22 L14 21 L11 14 L18 14 Z" fill="#fff" stroke="#221D23" stroke-width="2" stroke-linejoin="round"/></svg>
+  <div class="intro" id="intro">
+    <div class="deco"><i class="d1"></i><i class="d2"></i><i class="d3"></i><i class="d4"></i><i class="d5"></i></div>
+    <div class="big">Want to <mark>learn AI?</mark></div>
+    <div class="tag">Too much noise, too little time, and no clear place to start.</div>
+  </div>
+  <div class="end" id="end">
+    <div class="deco"><i class="d1"></i><i class="d2"></i><i class="d3"></i><i class="d4"></i><i class="d5"></i></div>
+    <div class="big">Learn AI in <mark>3 minutes a day.</mark></div>
+    <div class="tag">Your free AI Learning Plan, delivered on WhatsApp.</div>
+    <div class="visit">Visit <b>nudgeable.ai</b></div>
+  </div>
+  <img class="logo" alt="nudgeable" src="data:image/png;base64,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">
+</div></div>
+
+<script>
+const S=document.getElementById('stage'),F=document.querySelector('.frame');
+function fit(){S.style.transform='scale('+F.clientWidth/1280+')'}addEventListener('resize',fit);fit();
+const $=id=>document.getElementById(id);
+const cats=[
+ {name:'AI Foundations',c:'var(--found)',items:['MCP','Tokens','Context','Agents']},
+ {name:'AI at Work',c:'var(--work)',items:['Skills','Projects','Cowork','Artifacts']},
+ {name:'Trending in AI',c:'var(--new)',items:['Jev AI','Agent swarms','Vibe coding','Voice agents']},
+ {name:'AI Research',c:'var(--res)',items:['AI behaviour','Hallucinations','Black box','AI honesty']}];
+const fmts=['3-min video','2-min read','Try it'];
+const order={'MCP':1,'Context':2,'Skills':3,'Cowork':4,'Agent swarms':5,'AI behaviour':6};
+const you=['MCP','Skills'];
+const inChaos=['MCP','Skills','Vibe coding','Hallucinations','Agents','Cowork'];
+const noise=['ChatGPT update','Grok drama','Gemini launch','AGI by 2027?','Top 50 AI tools','Prompt tricks','DeepSeek shock','AI will take jobs?','Viral AI demo','Yet another model'];
+// hand-placed chaos slots, clear of headline and "?"
+const slots=[[80,160,-6],[360,150,4],[770,158,-3],[1010,172,6],[110,262,5],[350,258,-4],[810,252,3],[1040,268,-5],
+ [60,378,-3],[310,392,6],[840,384,-6],[1060,398,4],[150,505,4],[430,500,-5],[700,512,3],[960,524,-4]];
+const rowY=[180,256,332,408],chips=[];
+function mk(t,c,f,isNoise){const el=document.createElement('div');el.className='chip'+(isNoise?' noise':'');el.style.setProperty('--c',c);
+  el.innerHTML='<div class="in"><i class="ic"></i><div class="tx"><span>'+t+'</span><small>'+(f||'')+'</small></div></div><div class="num">'+(order[t]||'')+'</div>';
+  S.insertBefore(el,$('q'));return el}
+cats.forEach((c,r)=>{const L=document.createElement('div');L.className='rowlabel';L.style.top=(rowY[r]+16)+'px';
+  L.innerHTML='<i style="background:'+c.c+'"></i>'+c.name;S.insertBefore(L,$('q'));
+  c.items.forEach((t,i)=>chips.push({el:mk(t,c.c,fmts[(r+i)%3]),t,r,i,o:order[t],keep:true}))});
+noise.forEach(t=>chips.push({el:mk(t,'#999','',true),t,keep:false}));
+const labels=[...S.querySelectorAll('.rowlabel')];
+// assign chaos slots: interleave keep and noise
+const chaosList=[];{let k=chips.filter(c=>inChaos.includes(c.t)),n=chips.filter(c=>!c.keep);
+  const pat='nknnkn knnk nknk'.replace(/ /g,'');let ki=0,ni=0;for(const p of pat)chaosList.push(p==='k'?k[ki++]:n[ni++]);}
+chaosList.forEach((c,j)=>c.slot=slots[j]);
+// habit grid
+const hg=$('hgrid');hg.innerHTML='<div></div>'+'MTWTFSS'.split('').map(d=>'<div class="dn">'+d+'</div>').join('');
+for(let w=1;w<=4;w++){hg.innerHTML+='<div class="wk">Week '+w+'</div>';for(let d=0;d<7;d++)hg.innerHTML+='<div class="sq"></div>'}
+const sqs=[...hg.querySelectorAll('.sq')];
+
+function pos(el,x,y,rot=0,sc=1){el.style.transform='translate('+x+'px,'+y+'px) rotate('+rot+'deg) scale('+sc+')'}
+function head(h){const e=$('head');e.classList.add('out');e.classList.remove('lit');
+  setTimeout(()=>{e.innerHTML=h;e.classList.remove('out');setTimeout(()=>e.classList.add('lit'),60)},260)}
+const gridXY=c=>[330+c.i*214,rowY[c.r]];
+function rel(el){let x=0,y=0;while(el&&el!==S){x+=el.offsetLeft;y+=el.offsetTop;el=el.offsetParent}return[x,y]}
+let timers=[];const T0=3000;const at=(ms,f)=>timers.push(setTimeout(f,ms+T0));
+const C=t=>chips.find(c=>c.t===t);
+
+function reset(){
+  timers.forEach(clearTimeout);timers=[];
+  S.className='chaos';const h=$('head');h.innerHTML='AI changes <mark>every week</mark>. How do you keep up?';h.className='head';
+  $('q').style.opacity=0;$('q').style.transform='scale(.3)';
+  labels.forEach(e=>e.style.opacity=0);
+  $('toggle').classList.remove('show');$('tYou').className='';$('tAi').className='';
+  const cu=$('cursor');cu.style.opacity=0;cu.classList.remove('tap');
+  const pl=$('planlabel');pl.style.opacity=0;pl.style.transform='';
+  ['phone','badge','habit','streak','pulse'].forEach(i=>$(i).classList.remove('show'));$('pulse').style.opacity=0;$('walab').style.opacity=0;
+  ['b1','vid','btn'].forEach(i=>$(i).classList.remove('on','play','ok'));$('btn').textContent='Mark complete';
+  $('intro').className='intro';$('end').classList.remove('show');sqs.forEach(s=>{s.classList.remove('on');s.textContent=''});$('cnt').textContent='0';$('lbar').style.width='0';
+  chips.forEach(ch=>{const el=ch.el;el.className='chip'+(ch.keep?'':' noise');el.style.transition='none';el.style.width='';
+    el.querySelector('.num').textContent=ch.o||'';el.querySelector('.num').classList.remove('done');
+    if(ch.slot){pos(el,ch.slot[0],ch.slot[1],ch.slot[2],.6);el.classList.add('hide')}
+    else{const [x,y]=ch.keep?gridXY(ch):[0,780];pos(el,x,y,0,.85);el.classList.add('hide')}});
+  void S.offsetWidth;chips.forEach(ch=>ch.el.style.transition='');
+}
+function cursorTo(t,ms){const [x,y]=gridXY(C(t));at(ms,()=>{const c=$('cursor');c.style.opacity=1;c.classList.remove('tap');pos(c,x+120,y+30)});
+  at(ms+450,()=>{$('cursor').classList.add('tap');C(t).el.classList.add('picked')})}
+
+function run(){
+  reset();
+  at(-2900,()=>$('intro').classList.add('a'));at(-2400,()=>$('intro').classList.add('b'));at(-1700,()=>$('intro').classList.add('c'));
+  at(-350,()=>$('intro').classList.add('off'));at(100,()=>$('head').classList.add('lit'));
+  // Beat 1: noise pops in
+  chaosList.forEach((ch,j)=>at(150+j*70,()=>{ch.el.classList.remove('hide');pos(ch.el,ch.slot[0],ch.slot[1],ch.slot[2],1)}));
+  at(1100,()=>{$('q').style.opacity=1;$('q').style.transform='scale(1)'});
+  // Beat 2: cut the noise
+  at(2900,()=>{S.className='';head('We <mark>cut the noise</mark>, keep what matters.');$('q').style.opacity=0;$('q').style.transform='scale(.3)';
+    chips.filter(c=>!c.keep).forEach(ch=>{ch.el.classList.add('hide');if(ch.slot)pos(ch.el,ch.slot[0],780,0,.8)})});
+  at(3500,()=>{labels.forEach(e=>e.style.opacity=1);
+    chips.filter(c=>c.keep).forEach(ch=>{ch.el.classList.remove('hide');const [x,y]=gridXY(ch);pos(ch.el,x,y)})});
+  // Beat 3: made into 3-min content
+  at(5200,()=>head('Every topic, explained in <mark>3 minutes</mark>.'));
+  chips.filter(c=>c.keep).forEach((ch,k)=>at(5600+k*70,()=>ch.el.classList.add('made')));
+  // Beat 4: pick or AI builds
+  at(7600,()=>{head('<mark>You pick</mark>, or let <mark>AI build</mark> your plan.');$('toggle').classList.add('show');$('tYou').className='on'});
+  cursorTo(you[0],8100);cursorTo(you[1],8750);
+  at(9700,()=>{$('tYou').className='';$('tAi').className='on';$('cursor').style.opacity=0;
+    chips.filter(c=>c.keep).forEach(ch=>ch.el.classList.add(ch.o?'picked':'faded'))});
+  at(10400,()=>{$('planlabel').style.opacity=1;
+    chips.filter(c=>c.o).forEach(ch=>{ch.el.classList.add('planned');pos(ch.el,70+(ch.o-1)*184,544)})});
+  // Beat 5: WhatsApp delivery
+  at(12000,()=>{head('Delivered daily to your <mark>WhatsApp</mark>.');$('toggle').classList.remove('show');labels.forEach(e=>e.style.opacity=0);
+    chips.filter(c=>c.keep&&!c.o).forEach(ch=>ch.el.classList.add('hide'));
+    $('planlabel').style.transform='translateY(-376px)';
+    chips.filter(c=>c.o).forEach(ch=>{ch.el.style.width='300px';pos(ch.el,90,172+(ch.o-1)*74);if(ch.o>1){ch.el.classList.remove('picked');ch.el.classList.add('plain')}});
+    $('phone').classList.add('show');$('walab').style.opacity=1});
+  at(12900,()=>{const p=$('pulse');p.style.transition='none';pos(p,380,190);void p.offsetWidth;p.style.transition='';p.style.opacity=1;pos(p,830,250)});
+  at(13600,()=>{$('pulse').style.opacity=0;$('badge').classList.add('show')});
+  at(13900,()=>$('b1').classList.add('on'));
+  at(14500,()=>$('vid').classList.add('on'));
+  at(14800,()=>$('vid').classList.add('play'));
+  at(16200,()=>{$('btn').classList.add('on');const c=$('cursor'),[x,y]=rel($('btn'));c.classList.remove('tap');c.style.transition='none';pos(c,x+260,y+130);void c.offsetWidth;c.style.transition='';c.style.opacity=1;pos(c,x+150,y+24)});
+  at(16800,()=>{$('cursor').classList.add('tap');$('btn').classList.add('ok');$('btn').textContent='✓ Done · Day 1';$('badge').classList.remove('show');
+    const n=C('MCP').el.querySelector('.num');n.textContent='✓';n.classList.add('done')});
+  // Beat 6: habit
+  at(17900,()=>{head('Build an <mark>AI habit</mark>, a few minutes a day.');$('cursor').style.opacity=0;
+    $('phone').classList.remove('show');$('walab').style.opacity=0;$('planlabel').style.opacity=0;chips.forEach(ch=>ch.el.classList.add('hide'));
+    $('habit').classList.add('show');$('streak').classList.add('show')});
+  sqs.forEach((s,k)=>at(18500+k*85,()=>{s.classList.add('on');s.textContent='✓';$('cnt').textContent=k+1;$('lbar').style.width=((k+1)/28*100)+'%'}));
+  // End
+  at(21900,()=>$('end').classList.add('show'));
+  at(25600,run);
+}
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+addEventListener('message',e=>{if(e.source!==parent)return;if(e.data==='pause-fluency'){timers.forEach(clearTimeout);timers=[];document.body.classList.add('paused')}if(e.data==='play-fluency'){document.body.classList.remove('paused');run()}});
+if(reduced){reset();$('intro').classList.add('off');$('end').classList.add('show')}else run();
+</script></body></html>

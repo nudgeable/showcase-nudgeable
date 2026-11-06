@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
+import '@/styles/design/library.css';
+import '@/styles/design/extras.css';
 import { BlogsLibrary } from '@/components/BlogsLibrary';
+import { DesignShell } from '@/components/design/DesignShell';
 import { listPublishedPosts } from '@/lib/blogs';
 
 export const dynamic = 'force-dynamic';
@@ -25,5 +28,5 @@ export const metadata: Metadata = {
 
 export default async function BlogsPage() {
   const posts = await listPublishedPosts();
-  return <BlogsLibrary posts={posts} />;
+  return <DesignShell page="blogs" active="blogs"><BlogsLibrary posts={posts} /></DesignShell>;
 }

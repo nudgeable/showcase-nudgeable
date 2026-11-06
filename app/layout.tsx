@@ -1,7 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import './globals.css';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
 import { Analytics as GoogleAnalytics } from '@/components/Analytics';
 import { Analytics } from '@vercel/analytics/next';
 import { AnalyticsTracker } from '@/components/AnalyticsTracker';
@@ -43,7 +40,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   colorScheme: 'light',
-  themeColor: '#FEFCFA'
+  themeColor: '#fffdf5'
 };
 
 const structuredData = {
@@ -74,14 +71,17 @@ const structuredData = {
   ]
 };
 
+// Stylesheets load per page (see styles/design). Internal tools keep app/globals.css via their own layouts.
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en">
+    <head>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap" rel="stylesheet" />
+    </head>
     <body>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
-      <a className="skip-link" href="#main-content">Skip to main content</a>
-      <Header />
-      <main id="main-content">{children}</main>
-      <Footer />
+      {children}
       <GoogleAnalytics />
       <Analytics />
       <AnalyticsTracker />

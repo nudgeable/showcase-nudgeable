@@ -54,3 +54,15 @@ nudgeable-vercel-final/
 - `https://www.nudgeable.ai/insights`
 
 The Practice Lab button opens `https://work.nudgeable.app/` directly.
+
+## Site design (November 2026)
+
+- `styles/design/*.css`: one stylesheet bundle per page type, in the design's original rule order. Do not reorder rules.
+- `styles/design/extras.css`: article, legal, Role Play and newsletter styles, which the design has no reference for.
+- `components/design/`: shared shell, header and footer, plus page content in `content/`.
+- `lib/design/`: page behaviour, run once after hydration by `DesignScripts`.
+- `lib/siteLinks.ts`: Learn, Academy and AI for Work URLs. Set `NEXT_PUBLIC_LEARN_URL` for the Learn domain.
+- `public/assets/landing-theme.css`: loaded only by the AI Academy and AI for Work landing pages.
+- `/analytics` and `/insights/blogs/write` keep `app/globals.css` through their own layouts.
+
+Links between pages must be plain `<a>` tags, not `next/link`. Each page type has its own stylesheet, and a client-side transition would carry one page's CSS onto the next.

@@ -1,0 +1,217 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>html,body{width:100%;height:100%;padding:0!important;overflow:hidden}body{display:block}.frame{width:100%;max-width:none;border:0;border-radius:0}.paused *{animation-play-state:paused!important}</style></head><body>
+<title>AI Fluency Plan Animation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap">
+<style>
+/* Layout: one 16:9 HD stage (1280x720) scaled to fit; 4 beats + end card over ~8 seconds */
+:root{
+  --bg:#FFFDF5; --card:#FFFFFF; --ink:#221D23; --muted:#7A7280; --line:#E8E2D2; --chiffon:#FFF6CF;
+  --amber:#FFCE00; --found:#623CEA; --work:#23CE6B; --new:#F68A29; --res:#14A89A; --wa:#0B6B57; --red:#ED4551;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);margin:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));box-sizing:border-box}
+.frame{width:100%;max-width:1100px;aspect-ratio:16/9;position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:20px}
+#stage{width:1280px;height:720px;position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden}
+.head{position:absolute;left:70px;top:52px;font-size:46px;font-weight:800;letter-spacing:-.02em;transition:opacity .25s;z-index:5}
+.logo{position:absolute;right:70px;top:66px;font-size:24px;font-weight:800;letter-spacing:-.02em;transition:opacity .3s}
+.logo sup{font-size:10px}
+.rowlabel{position:absolute;left:70px;font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .4s}
+.rowlabel i{width:14px;height:14px;border-radius:50%;display:block}
+.chip{position:absolute;left:0;top:0;width:176px;height:48px;z-index:2;transition:transform .7s cubic-bezier(.6,0,.2,1),opacity .45s,width .5s}
+.chip.planned{width:118px}.chip.planned .in{font-size:12px;gap:5px}
+.chip.gone{opacity:0!important}
+.chip .in{width:100%;height:100%;border-radius:12px;border:2px solid color-mix(in srgb,var(--c) 40%,#fff);background:color-mix(in srgb,var(--c) 13%,#fff);color:color-mix(in srgb,var(--c) 70%,#000);font-weight:700;font-size:15px;white-space:nowrap;
+  display:flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;transition:box-shadow .3s,transform .3s}
+.chip.made .in::before{content:"";flex:none;border-left:10px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
+.chaos .chip .in{animation:wob .45s ease-in-out infinite alternate;background:var(--card);color:#6B6470;border:1.5px dashed #CFC8BC;border-radius:4px;font-weight:600;font-style:italic}
+.chaos .chip:nth-child(3n) .in{font-size:13px}.chaos .chip:nth-child(5n) .in{font-size:16px;font-style:normal}
+.chip:nth-child(3n) .in{animation-duration:.38s}.chip:nth-child(4n) .in{animation-delay:-.2s}
+@keyframes wob{from{transform:translate(-7px,-5px) rotate(-4deg)}to{transform:translate(7px,5px) rotate(4deg)}}
+.chip.drop{opacity:0}
+.chip.faded{opacity:.2}
+.chip.picked .in{background:var(--c);color:#fff;border-color:var(--ink);box-shadow:5px 5px 0 var(--ink);transform:scale(1.07)}
+.num{position:absolute;left:-12px;top:-14px;width:30px;height:30px;border-radius:50%;background:var(--ink);border:2.5px solid var(--card);
+  font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transform:scale(.4);transition:all .3s}
+.fmt{position:absolute;right:-8px;top:-12px;background:var(--amber);border:2px solid var(--ink);border-radius:999px;padding:2px 8px;font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--ink);opacity:0;transform:scale(.4);transition:all .3s;z-index:3}
+.made .fmt{opacity:1;transform:none}
+.made .in{animation:flip .5s ease}
+@keyframes flip{50%{transform:rotateX(90deg)}}
+.planned .fmt,.faded .fmt{opacity:0}
+.planned .num{opacity:1;transform:scale(1)}
+.chip.planned.picked .in{transform:none;box-shadow:3px 3px 0 var(--ink)}
+.q{position:absolute;left:590px;top:320px;width:110px;height:110px;border-radius:50%;background:var(--ink);color:#fff;font-size:60px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;z-index:6;transition:opacity .3s,transform .3s}
+.toggle{position:absolute;left:820px;top:122px;display:flex;border:2.5px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--card);
+  opacity:0;transform:translateY(-10px);transition:all .3s;z-index:5}
+.toggle span{padding:8px 18px;font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;transition:background .25s}
+.toggle span.on{background:var(--amber)}
+.cursor{position:absolute;left:0;top:0;width:34px;height:34px;opacity:0;z-index:7;transition:transform .45s cubic-bezier(.5,0,.3,1),opacity .2s}
+.cursor.tap::after{content:"";position:absolute;left:-14px;top:-14px;width:30px;height:30px;border-radius:50%;border:3px solid var(--found);animation:rip .4s ease-out}
+@keyframes rip{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
+.grow{position:absolute;left:640px;top:524px;font-size:16px;font-weight:700;color:var(--ink);opacity:0;transition:opacity .4s}
+.num.done{background:var(--work)}
+.vid{margin:8px 7px 0;height:62px;border-radius:8px;background:var(--ink);position:relative;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;opacity:0;transition:opacity .3s}
+.vid.on{opacity:1}
+.pbar{position:absolute;left:6px;right:6px;bottom:6px;height:4px;background:#5A535C;border-radius:2px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--amber)}
+.vid.play .pbar i{width:100%;transition:width 1s linear}
+.dbtn{margin:8px 7px 0;height:26px;border-radius:999px;border:2px solid var(--ink);background:var(--amber);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;opacity:0;transition:all .3s}
+.dbtn.on{opacity:1}.dbtn.ok{background:var(--work);color:#fff}
+.planlabel{position:absolute;left:70px;top:528px;font-size:15px;font-weight:700;letter-spacing:.2em;color:var(--muted);opacity:0;transition:opacity .3s}
+.track{position:absolute;left:70px;top:604px;height:4px;width:0;background:var(--ink);border-radius:2px;z-index:1;transition:width .6s ease}
+.pulse{position:absolute;top:594px;left:70px;width:24px;height:24px;border-radius:50%;background:var(--amber);border:2.5px solid var(--ink);opacity:0;z-index:4}
+.go .pulse{opacity:1;animation:run .7s ease-in forwards}
+@keyframes run{to{left:985px}}
+.dest{position:absolute;opacity:0;transform:translateY(20px) scale(.9);transition:all .4s cubic-bezier(.3,1.5,.5,1)}
+.show{opacity:1!important;transform:none!important}
+.phone{left:1000px;top:440px;width:124px;height:206px;border:3px solid var(--ink);border-radius:18px;background:#EFE6DD;overflow:hidden;box-sizing:border-box}
+.phone .bar{height:30px;background:var(--wa)}
+.msg{background:#DCF8C6;border:2px solid var(--ink);border-radius:8px;padding:6px;font-size:11px;font-weight:700;line-height:1.3;
+  opacity:0;transform:translateY(10px);transition:all .3s}
+.phone .msg{margin:9px 7px 0}
+.msg.on{opacity:1;transform:none}
+.lab{font-weight:800;font-size:16px;text-align:center}
+.wa{left:1000px;top:654px;width:124px;color:var(--wa)}
+.ping{position:absolute;left:1106px;top:426px;width:30px;height:30px;border-radius:50%;background:var(--red);border:2.5px solid var(--ink);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.mail{left:1146px;top:440px;width:100px;height:68px}
+.mailmsg{position:absolute;left:1140px;top:520px;width:112px;background:var(--chiffon)}
+.ml{left:1146px;top:654px;width:100px}
+.end{position:absolute;inset:0;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0;pointer-events:none;transition:opacity .5s;z-index:9}
+.end.show{opacity:1}
+.end .big{font-size:84px;font-weight:800;letter-spacing:-.03em}
+.end .big sup{font-size:22px}
+.end .tag{font-size:34px;font-weight:700}
+.endlogo{position:absolute;left:70px;bottom:50px;font-size:20px;font-weight:800;color:var(--muted)}
+.endlogo sup{font-size:9px}
+.end .pill{background:var(--amber);border:2.5px solid var(--ink);border-radius:999px;box-shadow:4px 4px 0 var(--ink);padding:10px 26px;font-weight:800;font-size:16px;letter-spacing:.16em;text-transform:uppercase}
+.controls{display:flex;gap:12px}
+button{font-family:var(--font);font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase;padding:10px 20px;
+  background:var(--amber);color:var(--ink);border:2px solid var(--ink);border-radius:999px;box-shadow:3px 3px 0 var(--ink);cursor:pointer}
+button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+button:focus-visible{outline:3px solid var(--found);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.chaos .chip .in{animation:none}}
+</style>
+
+<div class="frame"><div id="stage">
+  <div class="head" id="head">AI changes every week. How do you keep pace?</div>
+  <!-- LOGO SLOT: replace this text with the official black wordmark PNG -->
+  <div class="logo" id="logo" hidden></div>
+  <div class="q" id="q">?</div>
+  <div class="toggle" id="toggle"><span id="tYou">You pick</span><span id="tAi">AI builds</span></div>
+  <div class="planlabel" id="planlabel">YOUR AI FLUENCY PLAN</div>
+  <div class="grow" id="grow">Keeps growing as AI changes →</div>
+  <div class="track" id="track"></div>
+  <div class="pulse" id="pulse"></div>
+  <div class="dest phone" id="phone"><div class="bar"></div>
+    <div class="msg" id="m1">▶ Today: What is MCP? (3 min)</div>
+    <div class="vid" id="vid"><span>▶</span><div class="pbar"><i></i></div></div>
+    <div class="dbtn" id="dbtn">Mark complete</div>
+  </div>
+  <div class="dest lab wa" id="wa">WhatsApp</div>
+  <div class="dest ping" id="ping">2</div>
+  <svg class="dest mail" id="mail" viewBox="0 0 100 68"><rect x="2" y="2" width="96" height="64" rx="8" fill="#FFCE00" stroke="#221D23" stroke-width="4"/><path d="M4 6 L50 40 L96 6" fill="none" stroke="#221D23" stroke-width="4" stroke-linejoin="round"/></svg>
+  <div class="msg mailmsg" id="m3">📖 Next read: new AI behaviour study (4 min)</div>
+  <div class="dest lab ml" id="ml">Email</div>
+  <svg class="cursor" id="cursor" viewBox="0 0 24 24"><path d="M3 2 L3 20 L8 15 L11 22 L14 21 L11 14 L18 14 Z" fill="#fff" stroke="#221D23" stroke-width="2" stroke-linejoin="round"/></svg>
+  <div class="end" id="end">
+    <div class="big">Your AI Fluency Plan</div>
+    <div class="tag">Cut the noise, keep it simple, and keep learning.</div>
+    <div class="endlogo"><img src="/assets/nudgeable-logo-black.png" alt="Nudgeable" style="width:180px;height:auto"></div>
+  </div>
+</div></div>
+
+
+<script>
+const S=document.getElementById('stage'),F=document.querySelector('.frame');
+function fit(){S.style.transform='scale('+F.clientWidth/1280+')'}addEventListener('resize',fit);fit();
+const $=id=>document.getElementById(id);
+
+const cats=[
+ {name:'AI Foundations',c:'var(--found)',items:['MCP','Tokens','Context','Agents','RAG']},
+ {name:'AI at Work',c:'var(--work)',items:['Skills','Projects','Cowork','Scheduled Actions','Artifacts']},
+ {name:'Trending in AI',c:'var(--new)',items:['Jev AI','Dessa AI','Agent swarms','Vibe coding','Voice agents']},
+ {name:'AI Research',c:'var(--res)',items:['Black box','AI behaviour','Interpretability','Hallucinations','AI honesty']}
+];
+const noise=['ChatGPT update', 'New Claude model', 'Grok drama', 'Gemini launch', 'Copilot rollout', 'Llama release', 'DeepSeek shock', 'Mistral model', 'Sora video', 'Midjourney trend', 'Perplexity news', 'AGI by 2027?', 'Prompt tricks', 'Top 50 AI tools', 'Yet another GPT', 'AI benchmark war', 'Agent hype', 'Open vs closed AI', 'AI will take jobs?', 'Nano Banana', 'Cursor update', 'NotebookLM buzz', 'Viral AI demo', 'Meta AI app'];
+const cols=['var(--found)','var(--work)','var(--new)','var(--res)'];
+// plan order; 'you' = picked by the person, the rest by AI
+const order={'MCP':1,'Context':2,'Skills':3,'Cowork':4,'Agents':5,'Jev AI':6,'AI behaviour':7};
+const you=['MCP','Skills'];
+const rowY=[200,276,352,428], chips=[];
+function mk(t,c,f){const el=document.createElement('div');el.className='chip';el.style.setProperty('--c',c);
+  el.innerHTML='<div class="in">'+t+'</div><div class="fmt">'+(f||'')+'</div><div class="num">'+(order[t]||'')+'</div>';S.insertBefore(el,$('q'));return el}
+cats.forEach((c,r)=>{
+  const L=document.createElement('div');L.className='rowlabel';L.style.top=(rowY[r]+11)+'px';
+  L.innerHTML='<i style="background:'+c.c+'"></i>'+c.name;S.appendChild(L);
+  c.items.forEach((t,i)=>chips.push({el:mk(t,c.c,['3-MIN VIDEO','2-MIN READ','TRY IT'][(r+i)%3]),t,r,i,o:order[t],keep:true}));
+});
+noise.forEach((t,n)=>chips.push({el:mk(t,cols[n%4]),t,keep:false}));
+const labels=[...S.querySelectorAll('.rowlabel')];
+function pos(el,x,y,rot=0,sc=1){el.style.transform='translate('+x+'px,'+y+'px) rotate('+rot+'deg) scale('+sc+')'}
+function head(t){const h=$('head');h.style.opacity=0;setTimeout(()=>{h.textContent=t;h.style.opacity=1},220)}
+function chipXY(t){const c=chips.find(c=>c.t===t);return[300+c.i*184,rowY[c.r]]}
+let timers=[];const at=(ms,f)=>timers.push(setTimeout(f,ms));
+// seeded scatter so every loop looks the same
+let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+
+function reset(){
+  timers.forEach(clearTimeout);timers=[];seed=7;
+  S.className='chaos';$('head').textContent='AI changes every week. How do you keep pace?';$('head').style.opacity=1;$('logo').style.opacity=1;
+  $('q').style.opacity=1;$('q').style.transform='scale(1)';
+  labels.forEach(e=>e.style.opacity=0);
+  $('toggle').classList.remove('show');$('tYou').className='';$('tAi').className='';
+  $('cursor').style.opacity=0;$('cursor').classList.remove('tap');
+  $('planlabel').style.opacity=0;$('track').style.width='0';$('end').classList.remove('show');
+  ['phone','wa','ping','mail','ml'].forEach(i=>$(i).classList.remove('show'));
+  ['m1','m3','vid','dbtn'].forEach(i=>$(i).classList.remove('on','play','ok'));$('dbtn').textContent='Mark complete';
+  $('grow').style.opacity=0;chips.forEach(ch=>{const n=ch.el.querySelector('.num');n.textContent=ch.o||'';n.classList.remove('done')});
+  chips.forEach(ch=>{ch.el.classList.remove('drop','faded','picked','planned','gone','made');ch.el.style.transition='none';
+    pos(ch.el,40+rnd()*1060,130+rnd()*520,(rnd()-.5)*30,.9+rnd()*.25);});
+  void S.offsetWidth;chips.forEach(ch=>ch.el.style.transition='');
+}
+function cursorTo(t,ms){const [x,y]=chipXY(t);at(ms,()=>{const c=$('cursor');c.style.opacity=1;c.classList.remove('tap');pos(c,x+110,y+26)});
+  at(ms+450,()=>{$('cursor').classList.add('tap');chips.find(c=>c.t===t).el.classList.add('picked')});}
+
+function run(){
+  reset();
+  // Beat 2: filter the noise, sort into four tracks
+  at(1800,()=>{S.className='';head('We cut the noise and keep what matters.');$('logo').style.opacity=0;$('q').style.opacity=0;$('q').style.transform='scale(.3)';
+    chips.forEach(ch=>{if(!ch.keep){ch.el.classList.add('drop');const m=ch.el.style.transform.match(/translate\(([-\d.]+)px, ?([-\d.]+)px/);pos(ch.el,+m[1],760,0,.8)}});});
+  at(2600,()=>{labels.forEach(e=>e.style.opacity=1);chips.filter(c=>c.keep).forEach(ch=>pos(ch.el,300+ch.i*184,rowY[ch.r]));});
+  // Beat 3: we create our own content on each topic
+  at(3600,()=>head('Every topic, explained in a few minutes.'));
+  chips.filter(c=>c.keep).forEach((ch,k)=>at(3800+k*55,()=>ch.el.classList.add('made')));
+  // Beat 4: you pick, or AI builds
+  at(5400,()=>{head('Choose your topics, or let AI build your plan.');$('logo').style.opacity=0;$('toggle').classList.add('show');$('tYou').className='on'});
+  cursorTo(you[0],5500);cursorTo(you[1],6000);
+  at(6600,()=>{$('tYou').className='';$('tAi').className='on';$('cursor').style.opacity=0;
+    chips.filter(c=>c.keep).forEach(ch=>ch.el.classList.add(ch.o?'picked':'faded'));});
+  at(7100,()=>{$('planlabel').style.opacity=1;$('track').style.width='900px';
+    chips.filter(c=>c.o).forEach(ch=>{ch.el.classList.add('planned');pos(ch.el,70+(ch.o-1)*130,580)});});
+  // Beat 5: nudges on WhatsApp and email
+  at(7800,()=>{head('Learn on the go, a few minutes at a time.');$('toggle').classList.remove('show');S.className='go';
+    ['phone','wa','mail','ml'].forEach(i=>$(i).classList.add('show'));
+    labels.forEach(e=>e.style.opacity=0);chips.filter(c=>c.keep&&!c.o).forEach(ch=>ch.el.classList.add('gone'));});
+  at(8300,()=>{$('m1').classList.add('on');$('m3').classList.add('on');$('ping').classList.add('show')});
+  at(8800,()=>$('vid').classList.add('on'));
+  at(8950,()=>$('vid').classList.add('play'));
+  at(8700,()=>$('grow').style.opacity=1);
+  const tick=o=>{const n=chips.find(c=>c.o===o).el.querySelector('.num');n.textContent='✓';n.classList.add('done')};
+  at(9500,()=>{head('Keep building your AI skills, week after week.');$('dbtn').classList.add('on');const c=$('cursor');c.classList.remove('tap');c.style.transition='none';pos(c,1150,690);void c.offsetWidth;c.style.transition='';c.style.opacity=1;pos(c,1092,614)});
+  at(10100,()=>{$('cursor').classList.add('tap');$('dbtn').classList.add('ok');$('dbtn').textContent='✓ Completed';tick(1)});
+  at(10500,()=>{$('cursor').style.opacity=0;tick(2)});at(10800,()=>tick(3));
+  // End card
+  at(11600,()=>$('end').classList.add('show'));
+  at(13800,run);
+}
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function still(){reset();$('end').classList.add('show')}
+addEventListener('message',e=>{if(e.source!==parent)return;if(e.data==='pause-fluency'){timers.forEach(clearTimeout);timers=[];document.body.classList.add('paused')}if(e.data==='play-fluency'){document.body.classList.remove('paused');run()}});
+if(reduced)still();else run();
+</script>
+
+</body></html>

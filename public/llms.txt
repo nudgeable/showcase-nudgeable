@@ -1,14 +1,16 @@
 # Nudgeable
 
-> Practical AI for Work: corporate AI training, AI Coach roleplays, and the Actions Engine that turns AI training into applied workplace habits.
+> Practical AI for Work: AI masterclasses for teams, Nudgeable Learn, AI Role Play, and Nudgeable Apply, which turns AI training into applied workplace habits.
 
 Nudgeable helps non-technical corporate employees use AI tools (Claude, ChatGPT, Gemini, Copilot, AI agents) for real work tasks such as writing, research, data analysis, presentations and automation. Founded by Gaurav Patel, who combines 15+ years of corporate experience with a behavioral science background. Nudgeable has run 40+ corporate cohorts and trained 2,500+ professionals.
 
 ## Products
 
 - [AI Practice Lab](https://work.nudgeable.app/): Free library of 100+ guided AI workflows for real work tasks, with enterprise customization and reporting.
-- [AI Coach](https://www.nudgeable.ai/ai-role-play): Voice-based AI roleplay practice for sales and leadership conversations, with objective, conversation-linked feedback.
-- [Actions Engine](https://www.nudgeable.ai/nudgeengine): AI-generated personalized actions and behavioral nudges that turn classroom AI training into applied workplace habits.
+- [AI Masterclasses](https://www.nudgeable.ai/ai-training): Hands-on AI workshops built around a team's real tasks.
+- [Nudgeable Learn](https://www.nudgeable.ai/learn): A free, personalized 4-week plan of short AI explainers delivered on WhatsApp.
+- [AI Role Play](https://www.nudgeable.ai/ai-role-play): Voice-based AI roleplay practice for sales and leadership conversations, with objective, conversation-linked feedback.
+- [Nudgeable Apply](https://www.nudgeable.ai/nudgeengine): AI-generated personalized actions and behavioral nudges that turn classroom AI training into applied workplace habits.
 
 ## Content
 

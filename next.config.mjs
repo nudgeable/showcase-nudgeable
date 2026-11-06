@@ -30,7 +30,7 @@ const nextConfig = {
       { source: '/ai-practice-lab', destination: 'https://work.nudgeable.app/', permanent: true },
       { source: '/ai-academy', destination: '/ai-academy/index.html', permanent: false },
       { source: '/ai-academy/', destination: '/ai-academy/index.html', permanent: false },
-      { source: '/ai-training', destination: '/#training', permanent: true },
+      { source: '/apply', destination: '/nudgeengine', permanent: false },
       { source: '/about', destination: '/#about', permanent: true },
       { source: '/contact', destination: '/#contact', permanent: true },
       // Retired Wix/legacy URLs → homepage
