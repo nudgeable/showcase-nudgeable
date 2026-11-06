@@ -1,6 +1,8 @@
+import { ExplainerPlanner } from '@/components/design/explainers/ExplainerPlanner';
+import type { ExplainerArea } from '@/lib/learnCatalog';
 import { LEARN_URL } from '@/lib/siteLinks';
 
-export function LearnContent() {
+export function LearnContent({ areas }: { areas: ExplainerArea[] }) {
   return <>
     <section className="hero unified-hero" id="learn">
       <div className="container hero-grid unified-hero-grid">
@@ -148,7 +150,7 @@ export function LearnContent() {
               <span>Context windows</span>
               <span>How GenAI works</span>
             </div>
-            <a className="learn-category-link text-link" href="#plan" data-topic="foundations">Choose AI Foundations</a>
+            <a className="learn-category-link text-link" href="#plan" data-area="understand">Choose AI Foundations</a>
           </article>
           <article className="learn-category-card">
             <div className="category-card-top">
@@ -162,7 +164,7 @@ export function LearnContent() {
               <span>Work agents</span>
               <span>Scheduled actions</span>
             </div>
-            <a className="learn-category-link text-link" href="#plan" data-topic="work">Choose AI at Work</a>
+            <a className="learn-category-link text-link" href="#plan" data-area="daily">Choose AI at Work</a>
           </article>
           <article className="learn-category-card">
             <div className="category-card-top">
@@ -176,7 +178,7 @@ export function LearnContent() {
               <span>New features</span>
               <span>Emerging tools</span>
             </div>
-            <a className="learn-category-link text-link" href="#plan" data-topic="new">Choose New in AI</a>
+            <a className="learn-category-link text-link" href="#plan" data-area="new">Choose New in AI</a>
           </article>
           <article className="learn-category-card">
             <div className="category-card-top">
@@ -190,7 +192,7 @@ export function LearnContent() {
               <span>AI behavior</span>
               <span>Research findings</span>
             </div>
-            <a className="learn-category-link text-link" href="#plan" data-topic="research">Choose AI Research</a>
+            <a className="learn-category-link text-link" href="#plan" data-area="research">Choose AI Research</a>
           </article>
         </div>
       </div>
@@ -267,83 +269,7 @@ export function LearnContent() {
           </div>
         </div>
         {' '}
-        <div className="planner-shell">
-          <aside className="topic-sidebar">
-            <span className="sidebar-label">CHOOSE YOUR TOPICS</span>
-            <div className="topic-tabs" role="tablist" aria-label="Learning topics" aria-orientation="vertical">
-              <button className="topic-tab selected" role="tab" id="tab-foundations" aria-selected="true" aria-controls="lesson-panel" data-topic="foundations">
-                <span className="topic-icon purple">✧</span>
-                <span>
-                  <strong>AI Foundations</strong>
-                  <small>How AI works, one idea at a time</small>
-                </span>
-              </button>
-              <button className="topic-tab" role="tab" id="tab-work" aria-selected="false" aria-controls="lesson-panel" data-topic="work">
-                <span className="topic-icon green">▣</span>
-                <span>
-                  <strong>AI at Work</strong>
-                  <small>Use AI in your everyday work</small>
-                </span>
-              </button>
-              <button className="topic-tab" role="tab" id="tab-new" aria-selected="false" aria-controls="lesson-panel" data-topic="new">
-                <span className="topic-icon orange">✦</span>
-                <span>
-                  <strong>New in AI</strong>
-                  <small>Latest launches and new capabilities</small>
-                </span>
-              </button>
-              <button className="topic-tab" role="tab" id="tab-research" aria-selected="false" aria-controls="lesson-panel" data-topic="research">
-                <span className="topic-icon blue">⌘</span>
-                <span>
-                  <strong>AI Research</strong>
-                  <small>New studies, explained simply</small>
-                </span>
-              </button>
-            </div>
-          </aside>
-          {' '}
-          <div className="lesson-panel" id="lesson-panel" role="tabpanel" aria-labelledby="tab-foundations">
-            <div className="panel-heading">
-              <div>
-                <h3 id="topic-title">First, let’s make AI make sense.</h3>
-                <p id="topic-description">The ideas underneath the tools, one explainer at a time.</p>
-              </div>
-              <button id="add-topic" className="text-button">
-                {"Add all 6 "}
-                <span>＋</span>
-              </button>
-            </div>
-            <div className="lesson-grid" id="lesson-grid" />
-          </div>
-          {' '}
-          <div className="plan-summary">
-            <div>
-              <div className="summary-label">
-                <span className="summary-dot" />
-                <strong id="plan-count" aria-live="polite">0 of 15 explainers picked</strong>
-              </div>
-              <p id="plan-helper">Free · 4 weeks · Up to 15 explainers</p>
-              <div className="plan-delivery">
-                <span className="delivery-icons">
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M20.5 11.8a8.5 8.5 0 0 1-12.7 7.4L3 20.5l1.3-4.6a8.5 8.5 0 1 1 16.2-4.1Z" />
-                    <path d="M8 7.5c.6 3.7 2.6 5.8 6.5 7.3l1.6-1.9-2.7-1.3-.9.9c-1.6-.8-2.4-1.6-3-3.2l.9-.8L9 6.5Z" />
-                  </svg>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="m3 6 9 7 9-7" />
-                  </svg>
-                </span>
-                <span>Your explainers, delivered on WhatsApp or email.</span>
-              </div>
-            </div>
-            <div className="summary-actions">
-              <button className="clear-plan" id="clear-plan" hidden>Clear</button>
-              <button className="button" id="save-plan" disabled>{"Make this my plan "}</button>
-            </div>
-          </div>
-        </div>
-        {' '}
+        <ExplainerPlanner areas={areas} page="learn" />
       </div>
     </section>
     <section className="section learn-faq">
@@ -388,25 +314,5 @@ export function LearnContent() {
         </div>
       </div>
     </section>
-    <dialog id="plan-dialog" aria-labelledby="dialog-title">
-      <div className="dialog-top">
-        <span className="eyebrow">YOUR NEXT CHAPTER</span>
-        <button className="dialog-close" aria-label="Close plan">✕</button>
-      </div>
-      <div className="dialog-icon">✦</div>
-      <h2 id="dialog-title">
-        A little learning.
-        <br />
-        Made for you.
-      </h2>
-      <p>
-        Your picks are saved on this device. Continue to Nudgeable Learn to set up your account and WhatsApp delivery.
-      </p>
-      <div className="saved-lessons" id="saved-lessons" />
-      <div className="dialog-note">A free 4-week plan · Up to 15 explainers</div>
-      <a className="button" href={`${LEARN_URL}/plan/new`}>{"Continue to Nudgeable Learn "}</a>
-      <button id="download-plan" className="text-button">Download my picks</button>
-    </dialog>
-    <div id="toast" className="toast" role="status" hidden />
   </>;
 }

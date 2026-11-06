@@ -66,3 +66,10 @@ The Practice Lab button opens `https://work.nudgeable.app/` directly.
 - `/analytics` and `/insights/blogs/write` keep `app/globals.css` through their own layouts.
 
 Links between pages must be plain `<a>` tags, not `next/link`. Each page type has its own stylesheet, and a client-side transition would carry one page's CSS onto the next.
+
+## Live explainers
+
+- `lib/learnCatalog.ts` reads explainers from the Nudgeable Learn database, a separate Supabase project. Pages refresh every 60 seconds.
+- Set `LEARN_SUPABASE_URL` and `LEARN_SUPABASE_PUBLISHABLE_KEY` in Vercel. Use the publishable key, never the service role key. Without them the explainer sections show a link to Learn.
+- `components/design/explainers/` holds the cards, hover preview, topic planner and shared picks.
+- Picks reach Learn in the link `/plan/new?picks=<ids>`, because browser storage isn't shared between the two domains. Learn reads them in `src/app/plan/new/import-picks.tsx`.

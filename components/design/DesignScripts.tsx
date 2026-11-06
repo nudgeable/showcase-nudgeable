@@ -14,11 +14,10 @@ export function DesignScripts({ page }: { page: DesignPage }) {
     void (async () => {
       (await import('@/lib/design/common')).initCommon();
       if (page === 'home') {
-        (await import('@/lib/design/homePlan')).initHomePlan();
+        (await import('@/lib/design/homeGallery')).initHomeGallery();
         (await import('@/lib/design/homeStats')).initHomeStats();
         (await import('@/lib/design/fluency')).initFluency();
       }
-      if (page === 'learn') (await import('@/lib/design/learnPlan')).initLearnPlan();
       if (page === 'training') (await import('@/lib/design/gallery')).initMasterclassGallery();
       if (page === 'apply') (await import('@/lib/design/applyPage')).initApplyPage();
     })();

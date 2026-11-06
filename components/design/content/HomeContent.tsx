@@ -1,6 +1,9 @@
+import { ExplainerFeatured } from '@/components/design/explainers/ExplainerFeatured';
+import { ExplainerPlanner } from '@/components/design/explainers/ExplainerPlanner';
+import type { ExplainerArea } from '@/lib/learnCatalog';
 import { LEARN_URL } from '@/lib/siteLinks';
 
-export function HomeContent() {
+export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
   return <>
     <section className="hero unified-hero" id="learn">
       <div className="container hero-grid unified-hero-grid">
@@ -110,49 +113,7 @@ export function HomeContent() {
           <a className="text-link" href={`${LEARN_URL}/`}>{"Explore all explainers "}</a>
         </div>
         {' '}
-        <div className="featured-grid">
-          {' '}
-          <a className="video-card" href={`${LEARN_URL}/lessons/5c269a0d-79d5-a206-b6eb-a920cb700ee8`} target="_blank" rel="noopener">
-            <div className="video-image">
-              <img src="assets/explainer-1.webp" alt="How does AI create?" width="640" height="360" />
-              <span className="play-button" aria-hidden="true">▶</span>
-              <span className="duration">1:46</span>
-            </div>
-            <div className="video-meta"><span>AI FOUNDATIONS</span></div>
-            <h3>What Is Generative AI?</h3>
-          </a>
-          {' '}
-          <a className="video-card" href={`${LEARN_URL}/lessons/98df6be2-670d-6edd-dccf-2c79854220c9`} target="_blank" rel="noopener">
-            <div className="video-image">
-              <img src="assets/explainer-2.webp" alt="How does AI pick the next word?" width="640" height="360" />
-              <span className="play-button" aria-hidden="true">▶</span>
-              <span className="duration">1:55</span>
-            </div>
-            <div className="video-meta"><span>AI FOUNDATIONS</span></div>
-            <h3>How AI Predicts the Next Word</h3>
-          </a>
-          {' '}
-          <a className="video-card" href={`${LEARN_URL}/lessons/fe8752d4-28ae-f139-474c-8c0f064b4168`} target="_blank" rel="noopener">
-            <div className="video-image">
-              <img src="assets/explainer-3.webp" alt="How does AI split words?" width="640" height="360" />
-              <span className="play-button" aria-hidden="true">▶</span>
-              <span className="duration">1:24</span>
-            </div>
-            <div className="video-meta"><span>AI FOUNDATIONS</span></div>
-            <h3>What Are Tokens?</h3>
-          </a>
-          {' '}
-          <a className="video-card" href={`${LEARN_URL}/lessons/1efab9e5-7192-1fd3-a6cd-de46d0a916bc`} target="_blank" rel="noopener">
-            <div className="video-image">
-              <img src="assets/explainer-4.webp" alt="Why did AI miss that instruction?" width="640" height="360" />
-              <span className="play-button" aria-hidden="true">▶</span>
-              <span className="duration">2:07</span>
-            </div>
-            <div className="video-meta"><span>AI AT WORK</span></div>
-            <h3>Why AI Stops Following Your Instructions</h3>
-          </a>
-          {' '}
-        </div>
+        <ExplainerFeatured areas={areas} />
       </div>
     </section>
     <section className="planner-section section" id="plan">
@@ -179,83 +140,7 @@ export function HomeContent() {
           </div>
         </div>
         {' '}
-        <div className="planner-shell">
-          <aside className="topic-sidebar">
-            <span className="sidebar-label">CHOOSE YOUR TOPICS</span>
-            <div className="topic-tabs" role="tablist" aria-label="Learning topics" aria-orientation="vertical">
-              <button className="topic-tab selected" role="tab" id="tab-foundations" aria-selected="true" aria-controls="lesson-panel" data-topic="foundations">
-                <span className="topic-icon purple">✧</span>
-                <span>
-                  <strong>AI Foundations</strong>
-                  <small>Understand how AI works</small>
-                </span>
-              </button>
-              <button className="topic-tab" role="tab" id="tab-work" aria-selected="false" aria-controls="lesson-panel" data-topic="work">
-                <span className="topic-icon green">▣</span>
-                <span>
-                  <strong>AI at Work</strong>
-                  <small>Put AI to practical use</small>
-                </span>
-              </button>
-              <button className="topic-tab" role="tab" id="tab-new" aria-selected="false" aria-controls="lesson-panel" data-topic="new">
-                <span className="topic-icon orange">✦</span>
-                <span>
-                  <strong>New in AI</strong>
-                  <small>Keep up with what changes</small>
-                </span>
-              </button>
-              <button className="topic-tab" role="tab" id="tab-research" aria-selected="false" aria-controls="lesson-panel" data-topic="research">
-                <span className="topic-icon blue">⌘</span>
-                <span>
-                  <strong>AI Research</strong>
-                  <small>Explore the bigger questions</small>
-                </span>
-              </button>
-            </div>
-          </aside>
-          {' '}
-          <div className="lesson-panel" id="lesson-panel" role="tabpanel" aria-labelledby="tab-foundations">
-            <div className="panel-heading">
-              <div>
-                <h3 id="topic-title">First, let’s make AI make sense.</h3>
-                <p id="topic-description">The ideas underneath the tools, one explainer at a time.</p>
-              </div>
-              <button id="add-topic" className="text-button">
-                {"Add all 6 "}
-                <span>＋</span>
-              </button>
-            </div>
-            <div className="lesson-grid" id="lesson-grid" />
-          </div>
-          {' '}
-          <div className="plan-summary">
-            <div>
-              <div className="summary-label">
-                <span className="summary-dot" />
-                <strong id="plan-count" aria-live="polite">0 of 15 explainers picked</strong>
-              </div>
-              <p id="plan-helper">Free · 4 weeks · Up to 15 explainers</p>
-              <div className="plan-delivery">
-                <span className="delivery-icons">
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M20.5 11.8a8.5 8.5 0 0 1-12.7 7.4L3 20.5l1.3-4.6a8.5 8.5 0 1 1 16.2-4.1Z" />
-                    <path d="M8 7.5c.6 3.7 2.6 5.8 6.5 7.3l1.6-1.9-2.7-1.3-.9.9c-1.6-.8-2.4-1.6-3-3.2l.9-.8L9 6.5Z" />
-                  </svg>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="m3 6 9 7 9-7" />
-                  </svg>
-                </span>
-                <span>Your explainers, delivered on WhatsApp or email.</span>
-              </div>
-            </div>
-            <div className="summary-actions">
-              <button className="clear-plan" id="clear-plan" hidden>Clear</button>
-              <button className="button" id="save-plan" disabled>{"Make this my plan "}</button>
-            </div>
-          </div>
-        </div>
-        {' '}
+        <ExplainerPlanner areas={areas} page="home" />
       </div>
     </section>
     <section className="training section" id="training">
@@ -564,30 +449,5 @@ export function HomeContent() {
         </form>
       </div>
     </section>
-  </>;
-}
-
-export function HomeDialogs() {
-  return <>
-    <dialog id="plan-dialog" aria-labelledby="dialog-title">
-      <div className="dialog-top">
-        <span className="eyebrow">YOUR NEXT CHAPTER</span>
-        <button className="dialog-close" aria-label="Close plan">✕</button>
-      </div>
-      <div className="dialog-icon">✦</div>
-      <h2 id="dialog-title">
-        A little learning.
-        <br />
-        Made for you.
-      </h2>
-      <p>
-        Your picks are saved on this device. Continue to Nudgeable Learn to set up your account and WhatsApp delivery.
-      </p>
-      <div className="saved-lessons" id="saved-lessons" />
-      <div className="dialog-note">A free 4-week plan · Up to 15 explainers</div>
-      <a className="button" href={`${LEARN_URL}/plan/new`}>{"Continue to Nudgeable Learn "}</a>
-      <button id="download-plan" className="text-button">Download my picks</button>
-    </dialog>
-    <div id="toast" className="toast" role="status" hidden />
   </>;
 }
