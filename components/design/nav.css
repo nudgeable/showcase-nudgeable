@@ -1,0 +1,6 @@
+/* "AI Masterclass" opens its menu instead of a page, so it matches the nav links beside it. */
+html [data-page] .nav-group .submenu-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 12px 0; font: inherit; font-size: 14px; color: var(--ink); white-space: nowrap; cursor: pointer; }
+html [data-page] .nav-group .submenu-toggle.active { box-shadow: 0 2px 0 var(--yellow); }
+.submenu-toggle span { font-size: 16px; line-height: 1; color: #7b7468; transition: transform .15s; }
+.submenu-toggle[aria-expanded="true"] span { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) { .submenu-toggle span { transition: none; } }

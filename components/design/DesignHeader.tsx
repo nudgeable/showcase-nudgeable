@@ -1,3 +1,4 @@
+import './nav.css';
 import { ACADEMY_URL, AI_FOR_WORK_URL, LEARN_URL } from '@/lib/siteLinks';
 
 export type NavKey = 'training' | 'learn' | 'apply' | 'videos' | 'blogs';
@@ -22,8 +23,9 @@ export function DesignHeader({ active }: { active?: NavKey }) {
       </a>
       <nav className="desktop-nav" aria-label="Main navigation">
         <div className="nav-group">
-          <a href="/ai-training" {...current(active, 'training')}>AI Masterclass</a>
-          <button className="submenu-toggle" aria-label="Show AI Masterclass submenu" aria-expanded="false" aria-controls="teams-submenu">+</button>
+          <button className={`submenu-toggle${active === 'training' ? ' active' : ''}`} aria-expanded="false" aria-controls="teams-submenu">
+            AI Masterclass <span aria-hidden="true">+</span>
+          </button>
           <div className="nav-dropdown" id="teams-submenu" hidden>
             <a href="/ai-training">AI masterclasses for teams<small>Hands-on learning around real work</small></a>
             <a href={ACADEMY_URL}>AI Academy<small>Practical guides, tools and foundations</small></a>
