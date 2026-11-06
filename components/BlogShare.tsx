@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 export function BlogShare({ url, title }: { url: string; title: string }) {
   const [copied, setCopied] = useState(false);
-  const shareUrl = typeof window === 'undefined' ? url : `${window.location.origin}${url}`;
+  const shareUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.nudgeable.ai'}${url}`;
   const linkedIn = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
 
   async function copyLink() {

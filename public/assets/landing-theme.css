@@ -1,0 +1,77 @@
+/* Brings the AI Academy and AI for Work landing pages into the site design.
+   Loaded by those two index.html files only; individual guides keep their own styling. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+
+:root {
+  --academy-font: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --n-amber: #ffce24;
+  --n-ink: #242220;
+  --bg: #fffdf5;
+  --line: #dedbd2;
+  /* AI for Work tokens */
+  --ink: #242220;
+  --navy: #242220;
+  --cream: #fffdf5;
+  --yellow: #ffce24;
+  --blue: #242220;
+  --muted: #5f5b53;
+  --pop: 0 3px 0 #242220;
+  --pop-sm: 0 2px 0 #242220;
+}
+
+html body { font-family: var(--academy-font); }
+html body h1, html body h2, html body h3 { font-family: 'Manrope', sans-serif !important; }
+
+/* Shared: the link back to the site */
+html body .back-home {
+  border: 1px solid #242220;
+  border-radius: 8px;
+  background: #ffce24;
+  color: #242220;
+  font-weight: 700;
+  box-shadow: 0 3px 0 #242220;
+}
+html body .back-home:hover { background: #ffce24; transform: translateY(-2px); box-shadow: 0 5px 0 #242220; }
+
+/* AI Academy */
+.hero-banner { border-radius: 16px; }
+html body .hero-banner h1 { font-weight: 800; letter-spacing: -1.6px; }
+.hero-actions .btn { border-radius: 8px; font-weight: 700; border: 1px solid #242220; box-shadow: 0 3px 0 #000; }
+.hero-actions .btn.ghost { border-radius: 8px; box-shadow: none; }
+html body .section-head h2 { font-weight: 800; letter-spacing: -.8px; line-height: 1.15; }
+.see-all { color: #242220; text-decoration: underline; text-decoration-color: #ffce24; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+/* AI for Work */
+.hero {
+  margin-top: 40px;
+  padding: 44px 44px 40px;
+  border: 1px solid #dedbd2;
+  border-radius: 16px;
+  background: linear-gradient(120deg, #fff6d2, #fffdf5 62%);
+  color: #242220;
+  box-shadow: none;
+}
+.hero .kick { border: 0; padding: 0; background: none; color: #242220; font-size: 12px; font-weight: 700; letter-spacing: 1.7px; }
+html body .hero h1 { font-size: clamp(40px, 4.2vw, 60px); font-weight: 800; line-height: 1.1; letter-spacing: -2.2px; text-transform: none; }
+.hero h1 span { position: relative; z-index: 0; color: #242220; }
+.hero h1 span::before { content: ''; position: absolute; inset: 8px -5px 1px -3px; z-index: -1; background: #ffce24; transform: rotate(-2deg); border-radius: 2px; }
+.herosub { color: #242220; font-weight: 600; }
+.hero p { color: #5f5b53; }
+.bar { padding: 0; border: 0; background: none; color: #242220; box-shadow: none; }
+html body .bar h2 { font-size: 32px; font-weight: 800; letter-spacing: -1px; text-transform: none; }
+.bar .count { border: 1px solid #242220; font-weight: 700; letter-spacing: .6px; }
+.blurb, .cbody p { color: #5f5b53; }
+.card { border: 1px solid #dedbd2; box-shadow: none; }
+a.card:hover { border-color: #242220; transform: translateY(-3px); box-shadow: 0 4px 0 #242220; }
+a.card:active { transform: none; box-shadow: none; }
+.thumb { border-bottom: 1px solid #dedbd2; }
+.tag { border: 1px solid #242220; font-weight: 700; letter-spacing: .6px; }
+html body .cbody h3 { font-weight: 800; letter-spacing: -.3px; }
+.go { font-weight: 700; letter-spacing: .6px; }
+footer { border-top: 0; color: #bdb9af; }
+footer .fl { font-family: 'Manrope', sans-serif; font-weight: 800; }
+
+@media (max-width: 700px) {
+  .hero { padding: 28px 20px; }
+  html body .bar h2 { font-size: 26px; }
+}

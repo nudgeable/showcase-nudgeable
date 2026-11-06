@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { Icon } from './Icon';
 
 const socials = [
@@ -13,9 +12,9 @@ export function Footer() {
   return <footer className="footer">
     <div className="container footer-grid">
       <div>
-        <Link href="/" className="brand footer-brand" aria-label="Nudgeable home">
+        <a href="/" className="brand footer-brand" aria-label="Nudgeable home">
           <Image src="/brand/nudgeable-white.png" alt="Nudgeable" width={705} height={149} sizes="180px" />
-        </Link>
+        </a>
         <p>Practical AI for Work training and products for corporate capability building.</p>
         <a href="mailto:team@nudgeable.ai">team@nudgeable.ai</a>
         <div className="footer-socials">
@@ -26,14 +25,14 @@ export function Footer() {
           ))}
         </div>
       </div>
-      <div><strong>Training</strong><Link href="/#training">Corporate workshops</Link><Link href="/#contact">Contact</Link><Link href="/#about">About Gaurav</Link></div>
-      <div><strong>Products</strong><a href="/ai-academy/index.html">AI Academy</a><Link href="/nudgeengine">Actions Engine</Link></div>
-      <div><strong>Content</strong><Link href="/insights">Videos</Link><Link href="/insights/blogs">Blogs</Link></div>
+      <div><strong>Training</strong><a href="/#training">Corporate workshops</a><a href="/#contact">Contact</a><a href="/#about">About Gaurav</a></div>
+      <div><strong>Products</strong><a href="/ai-academy/index.html">AI Academy</a><a href="/nudgeengine">Actions Engine</a></div>
+      <div><strong>Content</strong><a href="/insights">Videos</a><a href="/insights/blogs">Blogs</a></div>
     </div>
     <div className="container footer-bottom">
       <span>© 2026 Nudgeable. All rights reserved.</span>
       <div className="footer-bottom-links">
-        <Link href="/privacy">Privacy Policy</Link>
+        <a href="/privacy">Privacy Policy</a>
         <span>AI for Work, made practical.</span>
       </div>
     </div>

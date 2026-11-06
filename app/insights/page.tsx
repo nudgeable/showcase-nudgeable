@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import { InsightsVideoLibrary } from '@/components/InsightsVideoLibrary';
+import '@/styles/design/library.css';
+import { DesignShell } from '@/components/design/DesignShell';
+import { VideoLibrary } from '@/components/design/VideoLibrary';
 
 export const metadata: Metadata = {
   title: 'AI Insights and Workflows',
@@ -21,5 +23,5 @@ export const metadata: Metadata = {
 };
 
 export default function InsightsPage() {
-  return <InsightsVideoLibrary />;
+  return <DesignShell page="videos" active="videos"><VideoLibrary /></DesignShell>;
 }

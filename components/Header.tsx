@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Icon } from './Icon';
@@ -38,9 +37,9 @@ export function Header() {
   return <>
     <header className="site-header">
       <div className="container nav-wrap">
-        <Link href="/" className="brand" onClick={closeMenus} aria-label="Nudgeable home">
+        <a href="/" className="brand" onClick={closeMenus} aria-label="Nudgeable home">
           <Image src="/brand/nudgeable-black.png" alt="Nudgeable" width={704} height={149} priority sizes="170px" />
-        </Link>
+        </a>
         <button
           className="menu-button"
           aria-label={open ? 'Close navigation' : 'Open navigation'}
@@ -54,7 +53,7 @@ export function Header() {
           <a href={ACADEMY_URL} className={pathname.startsWith('/ai-academy') ? 'active' : ''} onClick={closeMenus}>AI Academy</a>
           <a href={AI_FOR_WORK_URL} className={pathname.startsWith('/ai-for-work') ? 'active' : ''} onClick={closeMenus}>AI for Work</a>
           {nav.map(item =>
-            <Link key={item.href} href={item.href} aria-current={pathname === item.href ? 'page' : undefined} className={pathname === item.href ? 'active' : ''} onClick={closeMenus}>{item.label}</Link>
+            <a key={item.href} href={item.href} aria-current={pathname === item.href ? 'page' : undefined} className={pathname === item.href ? 'active' : ''} onClick={closeMenus}>{item.label}</a>
           )}
         </nav>
       </div>

@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
+import '@/styles/design/library.css';
+import '@/styles/design/extras.css';
 import { notFound } from 'next/navigation';
 import { BlogArticle } from '@/components/BlogArticle';
+import { DesignShell } from '@/components/design/DesignShell';
 import { getPublishedPost, listPublishedPosts } from '@/lib/blogs';
 
 export const dynamic = 'force-dynamic';
@@ -45,5 +48,5 @@ export default async function BlogPostPage({ params }: PageProps) {
     .filter(item => item.slug !== post.slug)
     .sort((a, b) => Number(b.category === post.category) - Number(a.category === post.category))
     .slice(0, 3);
-  return <BlogArticle post={post} related={related} />;
+  return <DesignShell page="article" active="blogs"><BlogArticle post={post} related={related} /></DesignShell>;
 }

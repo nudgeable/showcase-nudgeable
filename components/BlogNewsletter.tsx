@@ -31,7 +31,7 @@ export function BlogNewsletter({ compact = false }: { compact?: boolean }) {
   return (
     <section className={`blog-newsletter${compact ? ' compact' : ''}`}>
       <div className="blog-news-copy">
-        <span className="eyebrow">Newsletter</span>
+        <div className="eyebrow"><span className="section-dash" />THE NEWSLETTER</div>
         <h2>Practical ideas for AI, behavior and work.</h2>
 
       </div>
@@ -50,7 +50,7 @@ export function BlogNewsletter({ compact = false }: { compact?: boolean }) {
             aria-label="Work email"
             autoComplete="email"
           />
-          <button className="button button-dark" type="submit" disabled={status === 'sending'}>
+          <button className="button" type="submit" disabled={status === 'sending'}>
             {status === 'sending' ? 'Sending…' : 'Subscribe'}
           </button>
           {/* <small className={status === 'error' ? 'error' : undefined}>

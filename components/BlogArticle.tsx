@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { formatBlogDate, prepareArticleHtml, readingTimeMinutes, type BlogPost } from '@/lib/blogShared';
 import { BlogCard } from './BlogCard';
 import { BlogNewsletter } from './BlogNewsletter';
@@ -21,8 +20,8 @@ export function BlogArticle({ post, related }: { post: BlogPost; related: BlogPo
   return <div className="blog-article-page">
     <article>
       <header className="container blog-article-header">
-        <Link href="/insights/blogs" className="blog-back">← All articles</Link>
-        <span className="blog-pill">{post.category}</span>
+        <a href="/insights/blogs" className="blog-back">← All articles</a>
+        <span className="article-category">{post.category}</span>
         <h1>{post.title}</h1>
         {post.excerpt && <p className="blog-deck">{post.excerpt}</p>}
         <div className="blog-author">
@@ -57,14 +56,14 @@ export function BlogArticle({ post, related }: { post: BlogPost; related: BlogPo
     {related.length > 0 && (
       <section className="blog-related">
         <div className="container">
-          <div className="blogs-section-head">
+          <div className="section-heading">
             <div>
-              <span className="eyebrow purple">KEEP READING</span>
-              <h2>Related articles</h2>
+              <div className="eyebrow"><span className="section-dash" />KEEP READING</div>
+              <h2>Related <span className="serif-word">articles.</span></h2>
             </div>
-            <Link href="/insights/blogs">View all articles →</Link>
+            <a className="text-link" href="/insights/blogs">View all articles</a>
           </div>
-          <div className="blog-cards">{related.map(item => <BlogCard key={item.id} post={item} />)}</div>
+          <div className="article-grid">{related.map(item => <BlogCard key={item.id} post={item} />)}</div>
         </div>
       </section>
     )}
