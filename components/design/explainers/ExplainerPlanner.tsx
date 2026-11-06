@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
-import type { Explainer, ExplainerArea } from '@/lib/learnCatalog';
+import { useEffect, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
+import type { ExplainerArea } from '@/lib/learnCatalog';
 import { LEARN_URL } from '@/lib/siteLinks';
 import { ExplainerCard, ExplainerPreview, useHoverPreview } from './ExplainerCard';
 import { FREE_MAX, MIN_PICKS, savePicks, usePicks } from './picks';
@@ -32,12 +32,10 @@ export function ExplainerPlanner({ areas, page }: { areas: ExplainerArea[]; page
   const [notice, setNotice] = useState('');
   const stored = usePicks();
   const hover = useHoverPreview();
-  const dialog = useRef<HTMLDialogElement>(null);
 
   const all = areas.flatMap(area => area.explainers);
   // Anything no longer in the catalogue drops out of the plan
   const picks = stored.filter(id => all.some(explainer => explainer.id === id));
-  const chosen = picks.flatMap(id => all.filter(explainer => explainer.id === id));
   const area = areas.find(item => item.key === open) ?? areas[0];
 
   function pickTopic(key: string) {
@@ -98,17 +96,6 @@ export function ExplainerPlanner({ areas, page }: { areas: ExplainerArea[]; page
     const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? areas.length - 1 : (index + (forward ? 1 : -1) + areas.length) % areas.length;
     pickTopic(areas[nextIndex].key);
     event.currentTarget.querySelector<HTMLButtonElement>(`[data-area="${areas[nextIndex].key}"]`)?.focus();
-  }
-
-  function downloadPicks() {
-    const list = chosen.map((explainer: Explainer, index) => `${index + 1}. ${explainer.title}`).join('\n');
-    const content = `MY NUDGEABLE LEARNING PICKS\nA little learning. Every day.\n\n${list}\n\nContinue at ${planUrl(picks)}\n`;
-    const url = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'my-nudgeable-learning-plan.txt';
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   const helper = notice || (count === 0
@@ -181,7 +168,7 @@ export function ExplainerPlanner({ areas, page }: { areas: ExplainerArea[]; page
         </div>
         <div className="summary-actions">
           <button className="clear-plan" id="clear-plan" hidden={count === 0} onClick={() => { setNotice(''); savePicks([]); }}>Clear</button>
-          <button className="button" id="save-plan" disabled={count < MIN_PICKS} onClick={() => dialog.current?.showModal()}>{'Make this my plan '}</button>
+          <button className="button" id="save-plan" disabled={count < MIN_PICKS} onClick={() => location.assign(planUrl(picks))}>{'Make this my plan '}</button>
         </div>
       </div>
     </div>
@@ -192,29 +179,5 @@ export function ExplainerPlanner({ areas, page }: { areas: ExplainerArea[]; page
       hover={hover}
       onToggle={() => toggle(hover.popped!.explainer.id)}
     />}
-    <dialog
-      id="plan-dialog"
-      ref={dialog}
-      aria-labelledby="dialog-title"
-      onClick={event => {
-        if (event.target !== dialog.current) return;
-        const box = dialog.current.getBoundingClientRect();
-        if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dialog.current.close();
-      }}
-    >
-      <div className="dialog-top">
-        <span className="eyebrow">YOUR NEXT CHAPTER</span>
-        <button className="dialog-close" aria-label="Close plan" onClick={() => dialog.current?.close()}>✕</button>
-      </div>
-      <div className="dialog-icon">✦</div>
-      <h2 id="dialog-title">A little learning.<br />Made for you.</h2>
-      <p>Your picks come with you to Nudgeable Learn, where you set up your account and WhatsApp delivery.</p>
-      <div className="saved-lessons" id="saved-lessons">
-        {chosen.map((explainer, index) => <div key={explainer.id}><span>{String(index + 1).padStart(2, '0')}</span>{explainer.title}</div>)}
-      </div>
-      <div className="dialog-note">A free 4-week plan · Up to 15 explainers</div>
-      <a className="button" href={planUrl(picks)}>{'Continue to Nudgeable Learn '}</a>
-      <button id="download-plan" className="text-button" onClick={downloadPicks}>Download my picks</button>
-    </dialog>
   </>;
 }
