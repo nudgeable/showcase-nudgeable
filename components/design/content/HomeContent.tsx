@@ -1,3 +1,4 @@
+import { HeroAnimation } from '@/components/design/HeroAnimation';
 import { ExplainerFeatured } from '@/components/design/explainers/ExplainerFeatured';
 import { ExplainerPlanner } from '@/components/design/explainers/ExplainerPlanner';
 import type { ExplainerArea } from '@/lib/learnCatalog';
@@ -45,12 +46,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
           {' '}
         </div>
         {' '}
-        <div className="hero-art fluency-animation-art">
-          <div className="fluency-animation-frame">
-            <iframe id="fluency-animation" src="/assets/ai-learning-plan-animation.html" title="How your AI fluency plan works: choose topics, receive explainers on WhatsApp or email, and track completion" sandbox="allow-scripts allow-same-origin" loading="eager"></iframe>
-          </div>
-          <button className="fluency-animation-control" type="button" aria-controls="fluency-animation" aria-pressed="false">Pause animation</button>
-        </div>
+        <HeroAnimation className="fluency-animation-art" />
       </div>
     </section>
     <section className="clients" aria-label="You’re in good company">
