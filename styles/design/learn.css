@@ -745,3 +745,8 @@ body .logo-track{animation-duration:38s}
 @media(min-width:1200px){html [data-page="home"] .unified-hero .unified-hero-grid{grid-template-columns:420px minmax(0,1fr)!important;gap:32px!important}}
 @media(min-width:901px) and (max-width:1199px){html [data-page="home"] .unified-hero .unified-hero-grid{grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr)!important;gap:28px!important}}
 @media(min-width:901px){html [data-page="home"] .unified-hero .fluency-animation-art{max-width:none}}
+
+/* Hero animation at homepage size; the text column is wider because this headline is longer. */
+@media(min-width:1200px){html [data-page="learn"] .unified-hero .unified-hero-grid{grid-template-columns:460px minmax(0,1fr)!important;gap:32px!important}}
+@media(min-width:901px) and (max-width:1199px){html [data-page="learn"] .unified-hero .unified-hero-grid{grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr)!important;gap:28px!important}}
+@media(min-width:901px){html [data-page="learn"] .unified-hero .compact-learn-art{max-width:none}}

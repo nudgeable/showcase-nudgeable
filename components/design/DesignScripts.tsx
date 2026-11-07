@@ -18,6 +18,7 @@ export function DesignScripts({ page }: { page: DesignPage }) {
         (await import('@/lib/design/homeStats')).initHomeStats();
         (await import('@/lib/design/fluency')).initFluency();
       }
+      if (page === 'learn') (await import('@/lib/design/fluency')).initFluency();
       if (page === 'training') (await import('@/lib/design/gallery')).initMasterclassGallery();
       if (page === 'apply') (await import('@/lib/design/applyPage')).initApplyPage();
     })();

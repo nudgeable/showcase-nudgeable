@@ -1,3 +1,4 @@
+import { HeroAnimation } from '@/components/design/HeroAnimation';
 import { ExplainerPlanner } from '@/components/design/explainers/ExplainerPlanner';
 import type { ExplainerArea } from '@/lib/learnCatalog';
 import { LEARN_URL } from '@/lib/siteLinks';
@@ -39,41 +40,7 @@ export function LearnContent({ areas }: { areas: ExplainerArea[] }) {
           {' '}
         </div>
         {' '}
-        <div className="hero-art compact-learn-art">
-          <div className="compact-learn-card">
-            <div className="compact-learn-top">
-              <span>YOUR AI FLUENCY PLAN</span>
-              <b>Made for you</b>
-            </div>
-            <h2>Your learning plan.</h2>
-            <div className="compact-learn-rows">
-              <div>
-                <span className="compact-topic-icon" aria-hidden="true">✧</span>
-                <strong>AI Foundations</strong>
-                <span>Tokens · Context</span>
-              </div>
-              <div>
-                <span className="compact-topic-icon" aria-hidden="true">▣</span>
-                <strong>AI at Work</strong>
-                <span>Projects · Agents</span>
-              </div>
-              <div>
-                <span className="compact-topic-icon" aria-hidden="true">✦</span>
-                <strong>New in AI</strong>
-                <span>Tools · Launches</span>
-              </div>
-              <div>
-                <span className="compact-topic-icon" aria-hidden="true">⌘</span>
-                <strong>AI Research</strong>
-                <span>Studies · AI behaviour</span>
-              </div>
-            </div>
-            <div className="compact-learn-delivery">
-              <span aria-hidden="true">✓</span>
-              {" One explainer a day. On WhatsApp or email."}
-            </div>
-          </div>
-        </div>
+        <HeroAnimation className="compact-learn-art" />
       </div>
     </section>
     <section className="section learn-how">
