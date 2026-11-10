@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { createPortal } from 'react-dom';
+import { describeSection } from '@/components/AnalyticsTracker';
 import type { Explainer } from '@/lib/learnCatalog';
 import { LEARN_URL } from '@/lib/siteLinks';
 
@@ -22,7 +23,9 @@ function Counts({ views, likes }: { views: number; likes: number }) {
   </span>;
 }
 
-type Popped = { explainer: Explainer; card: DOMRect };
+// section: where the card sits on the page, so clicks inside the floating
+// preview (rendered into <body>) are still credited to that section.
+type Popped = { explainer: Explainer; card: DOMRect; section: string | null };
 
 // Resting a mouse on a card opens a larger preview; on touch a tap opens the lesson.
 export function useHoverPreview() {
@@ -63,7 +66,7 @@ export function useHoverPreview() {
       clearTimeout(closeTimer.current);
       clearTimeout(hoverTimer.current);
       const element = event.currentTarget;
-      hoverTimer.current = setTimeout(() => setPopped({ explainer, card: element.getBoundingClientRect() }), HOVER_MS);
+      hoverTimer.current = setTimeout(() => setPopped({ explainer, card: element.getBoundingClientRect(), section: describeSection(element) }), HOVER_MS);
     },
     leaveCard() {
       clearTimeout(hoverTimer.current);
@@ -92,14 +95,15 @@ export function ExplainerCard({ explainer, picked, under, hover, onToggle }: {
     className={`lx-card${picked ? ' is-on' : ''}${under ? ' is-under' : ''}`}
     onPointerEnter={event => hover.enterCard(event, explainer)}
     onPointerLeave={hover.leaveCard}
+    data-analytics-explainer={explainer.title}
   >
-    <a className="lx-card__media" href={href} target="_blank" rel="noopener" aria-label={`Watch ${explainer.title}`}>
+    <a className="lx-card__media" data-analytics-action="Watch (thumbnail)" href={href} target="_blank" rel="noopener" aria-label={`Watch ${explainer.title}`}>
       {explainer.thumbnail ? <img src={explainer.thumbnail} alt="" loading="lazy" /> : <span className="lx-card__blank" />}
       <span className="lx-card__play"><PlayIcon /></span>
       <span className="lx-card__time">{explainer.duration}</span>
     </a>
     <div className="lx-card__copy">
-      <h4><a href={href} target="_blank" rel="noopener">{explainer.title}</a></h4>
+      <h4><a href={href} target="_blank" rel="noopener" data-analytics-action="Watch (title)">{explainer.title}</a></h4>
       {explainer.summary && <p>{explainer.summary}</p>}
       <div className="lx-card__foot">
         <Counts views={explainer.views} likes={explainer.likes} />
@@ -108,6 +112,7 @@ export function ExplainerCard({ explainer, picked, under, hover, onToggle }: {
           type="button"
           aria-pressed={picked}
           aria-label={`${picked ? 'Remove from plan' : 'Add to plan'}: ${explainer.title}`}
+          data-analytics-action={picked ? 'Remove from plan' : 'Add to plan'}
           onClick={onToggle}
           onPointerEnter={hover.cancelHover}
         >
@@ -175,20 +180,20 @@ export function ExplainerPreview({ popped, picked, hover, onToggle }: {
     setSound(!sound);
   }
 
-  return createPortal(<div ref={box} className={`lx-pop${picked ? ' is-on' : ''}`} onPointerEnter={hover.holdOpen} onPointerLeave={hover.leaveCard}>
+  return createPortal(<div ref={box} className={`lx-pop${picked ? ' is-on' : ''}`} onPointerEnter={hover.holdOpen} onPointerLeave={hover.leaveCard} data-analytics-explainer={explainer.title} data-analytics-section={`${popped.section || 'Explainers'} › Preview`}>
     <div className="lx-pop__media">
       {explainer.thumbnail && <img src={explainer.thumbnail} alt="" />}
       {canPlay && <video ref={video} className={playing ? 'is-playing' : ''} muted loop playsInline preload="auto" onPlaying={() => setPlaying(true)} onTimeUpdate={tick} aria-hidden="true" />}
       {canPlay && <span className="lx-pop__tag">{playing ? '● Preview' : 'Preview · loading'}</span>}
-      {playing && <button className="lx-pop__sound" type="button" onClick={toggleSound} aria-pressed={sound} aria-label={sound ? 'Mute preview' : 'Unmute preview'}>{sound ? '🔊' : '🔇'}</button>}
+      {playing && <button className="lx-pop__sound" type="button" onClick={toggleSound} aria-pressed={sound} data-analytics-action={sound ? 'Mute preview' : 'Unmute preview'} aria-label={sound ? 'Mute preview' : 'Unmute preview'}>{sound ? '🔊' : '🔇'}</button>}
       <span className="lx-pop__bar"><i ref={bar} /></span>
     </div>
     <div className="lx-pop__copy">
       <h3>{explainer.title}</h3>
       {explainer.summary && <p>{explainer.summary}</p>}
       <div className="lx-pop__actions">
-        <a className="button button-dark" href={lessonUrl(explainer)} target="_blank" rel="noopener">▶ Watch explainer</a>
-        <button className={`button${picked ? ' button-outline' : ''}`} type="button" onClick={onToggle} aria-pressed={picked}>{picked ? 'In your plan' : 'Add to plan'}</button>
+        <a className="button button-dark" href={lessonUrl(explainer)} target="_blank" rel="noopener" data-analytics-action="Watch (preview)">▶ Watch explainer</a>
+        <button className={`button${picked ? ' button-outline' : ''}`} type="button" onClick={onToggle} aria-pressed={picked} data-analytics-action={picked ? 'Remove from plan (preview)' : 'Add to plan (preview)'}>{picked ? 'In your plan' : 'Add to plan'}</button>
       </div>
     </div>
   </div>, document.body);

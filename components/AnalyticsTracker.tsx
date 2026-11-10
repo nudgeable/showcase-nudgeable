@@ -2,6 +2,7 @@
 
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
+import { EXPLAINER_PREFIX, EXPLAINER_SEPARATOR } from '@/lib/analytics';
 
 function send(eventType: 'pageview' | 'click', route: string, target?: string | null, section?: string | null) {
   try {
@@ -29,6 +30,15 @@ function send(eventType: 'pageview' | 'click', route: string, target?: string | 
 }
 
 function describeTarget(el: HTMLElement): string {
+  // Explainer cards and their hover preview tag each control with the video
+  // title and what the control does, so the dashboard can count per video.
+  const action = el.getAttribute('data-analytics-action');
+  const explainer = el.closest('[data-analytics-explainer]')?.getAttribute('data-analytics-explainer');
+  if (action && explainer) {
+    const href = el instanceof HTMLAnchorElement ? el.getAttribute('href') : null;
+    const label = `${EXPLAINER_PREFIX}${cleanText(explainer, 150)}${EXPLAINER_SEPARATOR}${cleanText(action)}`;
+    return href ? `${label} → ${href}` : label;
+  }
   const label = el.getAttribute('aria-label') || el.textContent?.trim().replace(/\s+/g, ' ').slice(0, 120);
   if (el instanceof HTMLAnchorElement) {
     const href = el.getAttribute('href') || '';
@@ -52,7 +62,7 @@ function humanizeId(id: string): string {
  * or an ancestor wins; otherwise the nearest landmark (header, footer,
  * dialog, section, nav) is named from its aria-label, heading or id.
  */
-function describeSection(el: HTMLElement): string | null {
+export function describeSection(el: Element): string | null {
   const tagged = el.closest('[data-analytics-section]');
   if (tagged) return cleanText(tagged.getAttribute('data-analytics-section'), 80) || null;
 

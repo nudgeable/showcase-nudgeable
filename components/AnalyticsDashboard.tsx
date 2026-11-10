@@ -25,15 +25,74 @@ interface Stats {
   totalClicks: number;
   pages: { path: string; name: string; views: number; visitors: number }[];
   clickPages: ClickPage[];
+  content: ContentItem[];
   timeline: TimelineBucket[];
 }
 
-type SectionSort = 'page' | 'clicks';
+interface ContentItem {
+  type: 'Explainer' | 'Video' | 'Blog';
+  name: string;
+  count: number;
+  visitors: number;
+}
 
-function sortSections(sections: ClickSection[], sort: SectionSort) {
-  return [...sections].sort((a, b) => sort === 'page'
-    ? a.order - b.order || b.clicks - a.clicks
-    : b.clicks - a.clicks);
+type ContentFilter = 'all' | 'videos' | 'blogs';
+
+const CONTENT_PAGE_SIZE = 15;
+
+function plural(count: number, word: string) {
+  return `${count} ${word}${count === 1 ? '' : 's'}`;
+}
+
+/** Videos and blogs by name: clicked (videos) or viewed (blogs), and by how many people. */
+function ContentCard({ items }: { items: ContentItem[] }) {
+  const [filter, setFilter] = useState<ContentFilter>('all');
+  const [page, setPage] = useState(1);
+  const matching = items.filter(item => filter === 'all'
+    || (filter === 'blogs' ? item.type === 'Blog' : item.type !== 'Blog'));
+  const pageCount = Math.max(1, Math.ceil(matching.length / CONTENT_PAGE_SIZE));
+  const current = Math.min(page, pageCount); // data can shrink after a refresh or filter change
+  const shown = matching.slice((current - 1) * CONTENT_PAGE_SIZE, current * CONTENT_PAGE_SIZE);
+  return <div className="analytics-card">
+    <div className="analytics-clicks-head">
+      <div>
+        <strong>Content</strong>
+        <span>Videos clicked and blogs viewed.</span>
+      </div>
+      <div className="analytics-sort" role="group" aria-label="Show content">
+        {(['all', 'videos', 'blogs'] as const).map(value => (
+          <button key={value} type="button" className={filter === value ? 'is-active' : ''} onClick={() => { setFilter(value); setPage(1); }}>
+            {value === 'all' ? 'All' : value === 'videos' ? 'Videos' : 'Blogs'}
+          </button>
+        ))}
+      </div>
+    </div>
+    <ul className="analytics-content-list">
+      {shown.map(item => (
+        <li key={`${item.type}|${item.name}`}>
+          <span className="analytics-item-label">
+            {item.name}
+            <small>{item.type === 'Blog' ? 'Blog' : item.type === 'Explainer' ? 'Explainer video' : 'Video'}</small>
+          </span>
+          <span className="analytics-content-count">
+            {plural(item.count, item.type === 'Blog' ? 'view' : 'click')}
+            <small>{plural(item.visitors, 'visitor')}</small>
+          </span>
+        </li>
+      ))}
+      {!shown.length && <li className="analytics-empty">{filter === 'blogs' ? 'No blog views yet.' : filter === 'videos' ? 'No video clicks yet.' : 'No videos clicked or blogs viewed yet.'}</li>}
+    </ul>
+    {pageCount > 1 && <div className="analytics-content-pagination">
+      <button type="button" className="button button-secondary" disabled={current <= 1} onClick={() => setPage(current - 1)}>Previous</button>
+      <span>Page {current} of {pageCount} · {matching.length} items</span>
+      <button type="button" className="button button-secondary" disabled={current >= pageCount} onClick={() => setPage(current + 1)}>Next</button>
+    </div>}
+  </div>;
+}
+
+// Sections in the order they appear on the page, top to bottom.
+function sortSections(sections: ClickSection[]) {
+  return [...sections].sort((a, b) => a.order - b.order || b.clicks - a.clicks);
 }
 
 function percent(part: number, whole: number) {
@@ -54,7 +113,7 @@ function shortHref(href: string) {
   }
 }
 
-function ClickBreakdown({ pages, sort }: { pages: ClickPage[]; sort: SectionSort }) {
+function ClickBreakdown({ pages }: { pages: ClickPage[] }) {
   if (!pages.length) return <p className="analytics-empty">No clicks recorded yet.</p>;
   return <div className="analytics-click-pages">
     {pages.map(page => (
@@ -64,7 +123,7 @@ function ClickBreakdown({ pages, sort }: { pages: ClickPage[]; sort: SectionSort
           <span className="analytics-click-page-total">{page.clicks} click{page.clicks === 1 ? '' : 's'}</span>
         </summary>
         <div className="analytics-sections">
-          {sortSections(page.sections, sort).map(section => (
+          {sortSections(page.sections).map(section => (
             <div key={section.section} className="analytics-section">
               <div className="analytics-section-head">
                 <strong>{section.section}</strong>
@@ -172,7 +231,7 @@ export function AnalyticsDashboard() {
   const [typeFilter, setTypeFilter] = useState('');
   const [routeFilter, setRouteFilter] = useState('');
   const [rangeFilter, setRangeFilter] = useState('');
-  const [sectionSort, setSectionSort] = useState<SectionSort>('page');
+  const [trafficTab, setTrafficTab] = useState<'pages' | 'clicks'>('pages');
 
   const load = useCallback(async (pageArg: number) => {
     setLoading(true);
@@ -327,9 +386,14 @@ export function AnalyticsDashboard() {
       </div>}
 
       {stats && <div className="analytics-top-lists">
-        <div>
-          <strong>Pages seen</strong>
-          <ul>
+        <div className="analytics-card">
+          <div className="analytics-clicks-head">
+            <div className="analytics-tabs" role="tablist" aria-label="Pages and clicks">
+              <button type="button" role="tab" aria-selected={trafficTab === 'pages'} className={trafficTab === 'pages' ? 'is-active' : ''} onClick={() => setTrafficTab('pages')}>Pages seen</button>
+              <button type="button" role="tab" aria-selected={trafficTab === 'clicks'} className={trafficTab === 'clicks' ? 'is-active' : ''} onClick={() => setTrafficTab('clicks')}>Where they clicked</button>
+            </div>
+          </div>
+          {trafficTab === 'pages' ? <ul>
             <li className="analytics-list-head"><span>Page</span><span>Views · visitors</span></li>
             {stats.pages.map(item => (
               <li key={item.path}>
@@ -338,21 +402,9 @@ export function AnalyticsDashboard() {
               </li>
             ))}
             {!stats.pages.length && <li>No visits recorded yet.</li>}
-          </ul>
+          </ul> : <ClickBreakdown pages={stats.clickPages} />}
         </div>
-        <div className="analytics-clicks-card">
-          <div className="analytics-clicks-head">
-            <div>
-              <strong>Where they clicked</strong>
-              <span>Grouped by page, then by section of the page.</span>
-            </div>
-            <div className="analytics-sort" role="group" aria-label="Sort sections">
-              <button type="button" className={sectionSort === 'page' ? 'is-active' : ''} onClick={() => setSectionSort('page')}>Page order</button>
-              <button type="button" className={sectionSort === 'clicks' ? 'is-active' : ''} onClick={() => setSectionSort('clicks')}>Most clicks</button>
-            </div>
-          </div>
-          <ClickBreakdown pages={stats.clickPages} sort={sectionSort} />
-        </div>
+        <ContentCard items={stats.content || []} />
       </div>}
 
       <div className="analytics-range-tabs">

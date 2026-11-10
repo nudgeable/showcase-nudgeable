@@ -9501,3 +9501,72 @@ h2 {
   }
 }
 
+
+.analytics-top-lists.analytics-top-lists {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.analytics-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.analytics-tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: transparent;
+  padding: 4px 4px 8px;
+  margin-right: 12px;
+  font: inherit;
+  font-weight: 800;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.analytics-tabs button.is-active {
+  color: inherit;
+  border-bottom-color: #111;
+}
+
+.analytics-content-list li {
+  align-items: flex-start;
+}
+
+.analytics-content-count {
+  display: grid;
+  gap: 1px;
+  text-align: right;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.analytics-content-count small {
+  color: var(--muted);
+  font-size: .74rem;
+  font-weight: 500;
+}
+
+.analytics-content-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+.analytics-content-pagination .button {
+  min-height: 0;
+  padding: 6px 14px;
+  font-size: .8rem;
+}
+
+.analytics-content-pagination .button:disabled {
+  opacity: .45;
+  cursor: default;
+}
