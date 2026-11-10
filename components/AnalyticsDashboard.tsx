@@ -1,20 +1,134 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import type { AnalyticsEvent } from '@/lib/analytics';
+import { pageName, parseClickTarget, type AnalyticsEvent } from '@/lib/analytics';
 import { AnalyticsChart, type TimelineBucket } from './AnalyticsChart';
+
+interface ClickSection {
+  section: string;
+  order: number;
+  clicks: number;
+  items: { label: string; href: string | null; count: number }[];
+  moreItems: number;
+}
+
+interface ClickPage {
+  path: string;
+  name: string;
+  clicks: number;
+  sections: ClickSection[];
+}
 
 interface Stats {
   sampleSize: number;
   uniqueVisitors: number;
   totalClicks: number;
-  topRoutes: { route: string; count: number }[];
-  topClicks: { target: string; count: number }[];
+  pages: { path: string; name: string; views: number; visitors: number }[];
+  clickPages: ClickPage[];
   timeline: TimelineBucket[];
 }
 
-interface Response {
+type SectionSort = 'page' | 'clicks';
+
+function sortSections(sections: ClickSection[], sort: SectionSort) {
+  return [...sections].sort((a, b) => sort === 'page'
+    ? a.order - b.order || b.clicks - a.clicks
+    : b.clicks - a.clicks);
+}
+
+function percent(part: number, whole: number) {
+  if (!whole) return '0%';
+  const value = (part / whole) * 100;
+  return `${value < 10 ? value.toFixed(1) : Math.round(value)}%`;
+}
+
+function shortHref(href: string) {
+  if (href.startsWith('#')) return `jumps to ${href}`;
+  if (href.startsWith('mailto:')) return 'opens email';
+  try {
+    const url = new URL(href, 'https://nudgeable.ai');
+    if (url.hostname === 'nudgeable.ai') return `${url.pathname}${url.search}${url.hash}`;
+    return `${url.hostname}${url.pathname === '/' ? '' : url.pathname}`;
+  } catch {
+    return href;
+  }
+}
+
+function ClickBreakdown({ pages, sort }: { pages: ClickPage[]; sort: SectionSort }) {
+  if (!pages.length) return <p className="analytics-empty">No clicks recorded yet.</p>;
+  return <div className="analytics-click-pages">
+    {pages.map(page => (
+      <details key={page.path} className="analytics-click-page">
+        <summary>
+          <span className="analytics-click-page-name">{page.name}{page.name !== page.path && <code>{page.path}</code>}</span>
+          <span className="analytics-click-page-total">{page.clicks} click{page.clicks === 1 ? '' : 's'}</span>
+        </summary>
+        <div className="analytics-sections">
+          {sortSections(page.sections, sort).map(section => (
+            <div key={section.section} className="analytics-section">
+              <div className="analytics-section-head">
+                <strong>{section.section}</strong>
+                <span>{section.clicks} · {percent(section.clicks, page.clicks)}</span>
+              </div>
+              <div className="analytics-section-bar" aria-hidden="true"><i style={{ width: percent(section.clicks, page.clicks) }} /></div>
+              <ul>
+                {section.items.map(item => (
+                  <li key={`${item.label}|${item.href || ''}`}>
+                    <span className="analytics-item-label">
+                      {item.label}
+                      {item.href && <small title={item.href}>{shortHref(item.href)}</small>}
+                    </span>
+                    <span>{item.count}</span>
+                  </li>
+                ))}
+                {section.moreItems > 0 && <li className="analytics-item-more">+ {section.moreItems} more</li>}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </details>
+    ))}
+  </div>;
+}
+
+function EventDetail({ event }: { event: AnalyticsEvent }) {
+  if (event.event_type !== 'click') return <span className="analytics-muted">Viewed page</span>;
+  const { section, label, href } = parseClickTarget(event.target);
+  return <span className="analytics-event-detail">
+    <small>{section}</small>
+    {label}
+    {href && <small title={href}>{shortHref(href)}</small>}
+  </span>;
+}
+
+interface Visitor {
+  ip: string;
+  eventCount: number;
+  pageviews: number;
+  clicks: number;
+  firstSeen: string;
+  lastSeen: string;
+  pages: string[];
+  userAgent: string | null;
   events: AnalyticsEvent[];
+  hiddenEvents: number;
+}
+
+/** Rough "Mobile · Chrome" style hint from a user agent string. */
+function deviceLabel(userAgent: string | null) {
+  if (!userAgent) return '';
+  if (/bot|crawl|spider|slurp|preview/i.test(userAgent)) return 'Bot';
+  const device = /iPad|Tablet/i.test(userAgent) ? 'Tablet' : /Mobi|Android|iPhone/i.test(userAgent) ? 'Mobile' : 'Desktop';
+  const browser = /Edg\//.test(userAgent) ? 'Edge'
+    : /OPR\//.test(userAgent) ? 'Opera'
+      : /Firefox\//.test(userAgent) ? 'Firefox'
+        : /Chrome\//.test(userAgent) ? 'Chrome'
+          : /Safari\//.test(userAgent) ? 'Safari' : '';
+  return browser ? `${device} · ${browser}` : device;
+}
+
+interface Response {
+  visitors: Visitor[];
   total: number;
   page: number;
   pageSize: number;
@@ -45,10 +159,6 @@ function formatTime(value: string) {
   }
 }
 
-function formatRoute(route: string) {
-  return route === '/' ? 'Home page' : route;
-}
-
 export function AnalyticsDashboard() {
   const [ready, setReady] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
@@ -62,6 +172,7 @@ export function AnalyticsDashboard() {
   const [typeFilter, setTypeFilter] = useState('');
   const [routeFilter, setRouteFilter] = useState('');
   const [rangeFilter, setRangeFilter] = useState('');
+  const [sectionSort, setSectionSort] = useState<SectionSort>('page');
 
   const load = useCallback(async (pageArg: number) => {
     setLoading(true);
@@ -83,10 +194,10 @@ export function AnalyticsDashboard() {
         return;
       }
       setData({
-        events: Array.isArray(payload.events) ? payload.events : [],
+        visitors: Array.isArray(payload.visitors) ? payload.visitors : [],
         total: payload.total ?? 0,
         page: payload.page ?? pageArg,
-        pageSize: payload.pageSize ?? 50,
+        pageSize: payload.pageSize ?? 20,
         stats: payload.stats ?? null,
         configured: payload.configured !== false
       });
@@ -219,20 +330,28 @@ export function AnalyticsDashboard() {
         <div>
           <strong>Pages seen</strong>
           <ul>
-            {stats.topRoutes.map(item => (
-              <li key={item.route}><code>{formatRoute(item.route)}</code><span>{item.count}</span></li>
+            <li className="analytics-list-head"><span>Page</span><span>Views · visitors</span></li>
+            {stats.pages.map(item => (
+              <li key={item.path}>
+                <span className="analytics-item-label">{item.name}</span>
+                <span>{item.views} · {item.visitors}</span>
+              </li>
             ))}
-            {!stats.topRoutes.length && <li>No visits recorded yet.</li>}
+            {!stats.pages.length && <li>No visits recorded yet.</li>}
           </ul>
         </div>
-        <div>
-          <strong>Where they clicked</strong>
-          <ul>
-            {stats.topClicks.map(item => (
-              <li key={item.target}><span>{item.target}</span><span>{item.count}</span></li>
-            ))}
-            {!stats.topClicks.length && <li>No clicks recorded yet.</li>}
-          </ul>
+        <div className="analytics-clicks-card">
+          <div className="analytics-clicks-head">
+            <div>
+              <strong>Where they clicked</strong>
+              <span>Grouped by page, then by section of the page.</span>
+            </div>
+            <div className="analytics-sort" role="group" aria-label="Sort sections">
+              <button type="button" className={sectionSort === 'page' ? 'is-active' : ''} onClick={() => setSectionSort('page')}>Page order</button>
+              <button type="button" className={sectionSort === 'clicks' ? 'is-active' : ''} onClick={() => setSectionSort('clicks')}>Most clicks</button>
+            </div>
+          </div>
+          <ClickBreakdown pages={stats.clickPages} sort={sectionSort} />
         </div>
       </div>}
 
@@ -273,30 +392,54 @@ export function AnalyticsDashboard() {
         )}
       </div>
 
-      <div className="analytics-table-wrap">
-        <table className="analytics-table">
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Event</th>
-              <th>Route</th>
-              <th>IP address</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(data?.events || []).map(event => (
-              <tr key={event.id}>
-                <td>{formatTime(event.created_at)}</td>
-                <td><span className={`analytics-badge analytics-badge-${event.event_type}`}>{event.event_type}</span></td>
-                <td><code>{formatRoute(event.route)}</code></td>
-                <td>{event.ip}</td>
-              </tr>
-            ))}
-            {!loading && data && !data.events.length && (
-              <tr><td colSpan={4}>No events match these filters yet.</td></tr>
-            )}
-          </tbody>
-        </table>
+      <div className="analytics-visitors">
+        <div className="analytics-visitors-head">
+          <strong>Visitors</strong>
+          <span>Every event grouped by IP address, most recently active first. Open a visitor to see what they did, latest first.</span>
+        </div>
+        {(data?.visitors || []).map(visitor => (
+          <details key={visitor.ip} className="analytics-visitor">
+            <summary>
+              <span className="analytics-visitor-ip">
+                <strong>{visitor.ip}</strong>
+                {deviceLabel(visitor.userAgent) && <small>{deviceLabel(visitor.userAgent)}</small>}
+              </span>
+              <span className="analytics-visitor-counts">
+                <span className="analytics-badge analytics-badge-pageview">{visitor.pageviews} view{visitor.pageviews === 1 ? '' : 's'}</span>
+                <span className="analytics-badge analytics-badge-click">{visitor.clicks} click{visitor.clicks === 1 ? '' : 's'}</span>
+              </span>
+              <span className="analytics-visitor-pages" title={visitor.pages.join(', ')}>{visitor.pages.join(' · ') || '—'}</span>
+              <span className="analytics-visitor-time">
+                {formatTime(visitor.lastSeen)}
+                {visitor.firstSeen !== visitor.lastSeen && <small>since {formatTime(visitor.firstSeen)}</small>}
+              </span>
+            </summary>
+            <div className="analytics-table-wrap analytics-visitor-events">
+              <table className="analytics-table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Event</th>
+                    <th>Page</th>
+                    <th>Where</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visitor.events.map(event => (
+                    <tr key={event.id}>
+                      <td>{formatTime(event.created_at)}</td>
+                      <td><span className={`analytics-badge analytics-badge-${event.event_type}`}>{event.event_type}</span></td>
+                      <td><code title={event.route}>{pageName(event.route)}</code></td>
+                      <td><EventDetail event={event} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {visitor.hiddenEvents > 0 && <p className="analytics-muted">{visitor.hiddenEvents} earlier events not shown.</p>}
+            </div>
+          </details>
+        ))}
+        {!loading && data && !data.visitors.length && <p className="analytics-empty">No events match these filters yet.</p>}
       </div>
 
       {data && data.total > data.pageSize && <div className="analytics-pagination">

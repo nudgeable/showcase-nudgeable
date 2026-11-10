@@ -6,7 +6,7 @@ import { LEARN_URL } from '@/lib/siteLinks';
 
 export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
   return <>
-    <section className="hero unified-hero" id="learn">
+    <section className="hero unified-hero" id="learn" data-analytics-section="Hero">
       <div className="container hero-grid unified-hero-grid">
         {' '}
         <div className="hero-copy">
@@ -49,7 +49,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         <HeroAnimation className="fluency-animation-art" />
       </div>
     </section>
-    <section className="clients" aria-label="You’re in good company">
+    <section className="clients" aria-label="You’re in good company" data-analytics-section="Client logos">
       <div className="container clients-layout">
         <p>
           YOU’RE IN
@@ -92,7 +92,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         </div>
       </div>
     </section>
-    <section className="featured section" id="featured">
+    <section className="featured section" id="featured" data-analytics-section="Featured explainers">
       <div className="container">
         <div className="section-heading">
           <div>
@@ -112,7 +112,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         <ExplainerFeatured areas={areas} />
       </div>
     </section>
-    <section className="planner-section section" id="plan">
+    <section className="planner-section section" id="plan" data-analytics-section="Plan builder">
       <div className="container">
         <div className="section-heading">
           <div>
@@ -139,7 +139,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         <ExplainerPlanner areas={areas} page="home" />
       </div>
     </section>
-    <section className="training section" id="training">
+    <section className="training section" id="training" data-analytics-section="AI masterclasses">
       <div className="container">
         <div className="section-heading">
           <div>
@@ -158,7 +158,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         </div>
         {' '}
         <div className="training-compact">
-          <div className="founder-profile" id="about">
+          <div className="founder-profile" id="about" data-analytics-section="AI masterclasses › Founder profile">
             {' '}
             <figure className="profile-portrait">
               {' '}
@@ -204,7 +204,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
             {' '}
           </div>
           {' '}
-          <div className="workshop-showcase">
+          <div className="workshop-showcase" data-analytics-section="AI masterclasses › Photo gallery">
             <div className="workshop-gallery">
               <div className="gallery-images">
                 <img className="gallery-image current" src="/assets/training-photo-1.webp" alt="AI training for an HR team" loading="lazy" width="1071" height="774" />
@@ -262,7 +262,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         {' '}
       </div>
     </section>
-    <section className="apply-section" id="apply">
+    <section className="apply-section" id="apply" data-analytics-section="Nudgeable Apply">
       {' '}
       <div className="container">
         {' '}
@@ -322,7 +322,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         {' '}
       </div>
     </section>
-    <section className="testimonials section">
+    <section className="testimonials section" data-analytics-section="Testimonials">
       <div className="container">
         <div className="section-heading">
           <div>
@@ -381,7 +381,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         </div>
       </div>
     </section>
-    <section className="contact-section" id="contact">
+    <section className="contact-section" id="contact" data-analytics-section="Contact form">
       <div className="container contact-grid">
         <div className="contact-copy">
           <div className="eyebrow">
