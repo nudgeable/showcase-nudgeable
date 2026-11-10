@@ -16,7 +16,7 @@ function current(active: NavKey | undefined, key: NavKey) {
 
 // Site navigation deliberately uses plain anchors: each page loads its own stylesheet bundle.
 export function DesignHeader({ active }: { active?: NavKey }) {
-  return <header className="header">
+  return <header className="header" data-analytics-section="Header">
     <div className="container nav-wrap">
       <a className="brand official-brand" href="/" aria-label="Nudgeable home">
         <img src="/assets/nudgeable-logo-black.png" alt="Nudgeable" width="704" height="149" />
@@ -40,7 +40,7 @@ export function DesignHeader({ active }: { active?: NavKey }) {
         <button className="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav"><span /><span /></button>
       </div>
     </div>
-    <nav id="mobile-nav" className="mobile-nav" aria-label="Mobile navigation" hidden>
+    <nav id="mobile-nav" className="mobile-nav" aria-label="Mobile navigation" data-analytics-section="Header › Mobile menu" hidden>
       <details>
         <summary>AI Masterclass</summary>
         <a href="/ai-training">AI masterclasses for teams</a>

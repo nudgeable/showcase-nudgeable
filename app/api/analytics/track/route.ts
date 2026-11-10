@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase, supabaseConfigured } from '@/lib/supabase';
-import { getClientIp } from '@/lib/analytics';
+import { encodeClickTarget, getClientIp } from '@/lib/analytics';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -35,7 +35,9 @@ export async function POST(request: NextRequest) {
   const payload = (body || {}) as Record<string, unknown>;
   const eventType = payload.eventType === 'click' ? 'click' : 'pageview';
   const route = clip(payload.route, 500) || '/';
-  const target = clip(payload.target, 300);
+  const target = eventType === 'click'
+    ? clip(encodeClickTarget(clip(payload.section, 80), clip(payload.target, 300)), 400)
+    : null;
   const referrer = clip(payload.referrer, 500);
   const userAgent = clip(request.headers.get('user-agent'), 300);
   const ip = getClientIp(request);
