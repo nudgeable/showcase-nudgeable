@@ -20,6 +20,48 @@ export interface AnalyticsEvent {
  */
 export const UNKNOWN_SECTION = 'Other / not tagged';
 
+// Clicks on an explainer video's controls are labelled
+// "Explainer: <title> ¦ <action>" (see components/AnalyticsTracker.tsx).
+export const EXPLAINER_PREFIX = 'Explainer: ';
+export const EXPLAINER_SEPARATOR = ' ¦ ';
+
+export interface ExplainerClick {
+  title: string;
+  action: string;
+  kind: 'watch' | 'add' | 'remove' | 'other';
+}
+
+function explainerKind(action: string): ExplainerClick['kind'] {
+  if (/^watch/i.test(action)) return 'watch';
+  if (/^add/i.test(action)) return 'add';
+  if (/^remove/i.test(action)) return 'remove';
+  return 'other';
+}
+
+/**
+ * Pulls the video out of an explainer click label. Also recognises the
+ * labels recorded before explainer tagging existed ("Watch <title>",
+ * "Add to plan: <title>", or a title link to a /lessons/ page).
+ */
+export function parseExplainerClick(label: string, href: string | null): ExplainerClick | null {
+  if (label.startsWith(EXPLAINER_PREFIX)) {
+    const rest = label.slice(EXPLAINER_PREFIX.length);
+    const split = rest.lastIndexOf(EXPLAINER_SEPARATOR);
+    if (split === -1) return null;
+    const action = rest.slice(split + EXPLAINER_SEPARATOR.length);
+    return { title: rest.slice(0, split), action, kind: explainerKind(action) };
+  }
+  const legacyPlan = label.match(/^(Add to plan|Remove from plan): (.+)$/);
+  if (legacyPlan) return { title: legacyPlan[2], action: legacyPlan[1], kind: explainerKind(legacyPlan[1]) };
+  if (href && /\/lessons\//.test(href)) {
+    if (/^▶? ?Watch explainer$/.test(label)) return null; // old preview button: no title recorded
+    const watch = label.match(/^Watch (.+)$/);
+    if (watch) return { title: watch[1], action: 'Watch (thumbnail)', kind: 'watch' };
+    return { title: label, action: 'Watch (title)', kind: 'watch' };
+  }
+  return null;
+}
+
 export function encodeClickTarget(section: string | null, target: string | null): string | null {
   const cleanSection = section?.replace(/[[\]]/g, '').trim();
   if (!cleanSection) return target;
@@ -35,15 +77,26 @@ const HAMBURGER_LABELS: Record<string, string> = {
   'Close menu': '☰ Hamburger menu · closed'
 };
 
-export function parseClickTarget(target: string | null): { section: string; label: string; href: string | null } {
+export interface ParsedClick {
+  section: string;
+  label: string;
+  href: string | null;
+  explainer: ExplainerClick | null;
+}
+
+export function parseClickTarget(target: string | null): ParsedClick {
   const raw = target || '';
   const match = raw.match(/^\[([^\]]{1,100})\] ([\s\S]*)$/);
   const rest = match ? match[2] : raw;
-  if (HAMBURGER_LABELS[rest]) return { section: match ? match[1] : 'Header', label: HAMBURGER_LABELS[rest], href: null };
+  if (HAMBURGER_LABELS[rest]) return { section: match ? match[1] : 'Header', label: HAMBURGER_LABELS[rest], href: null, explainer: null };
   const section = match ? match[1] : UNKNOWN_SECTION;
   const arrow = rest.lastIndexOf(' → ');
-  if (arrow === -1) return { section, label: rest || 'element', href: null };
-  return { section, label: rest.slice(0, arrow) || 'link', href: rest.slice(arrow + 3) || null };
+  const label = (arrow === -1 ? rest : rest.slice(0, arrow)) || (arrow === -1 ? 'element' : 'link');
+  const href = arrow === -1 ? null : rest.slice(arrow + 3) || null;
+  const explainer = parseExplainerClick(label, href);
+  // Readable label for explainer clicks: "▶ <title> · <action>".
+  const shown = explainer && label.startsWith(EXPLAINER_PREFIX) ? `▶ ${explainer.title} · ${explainer.action}` : label;
+  return { section, label: shown, href, explainer };
 }
 
 const PAGE_NAMES: Record<string, string> = {

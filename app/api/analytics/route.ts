@@ -9,6 +9,8 @@ export const dynamic = 'force-dynamic';
 // Visitors (distinct IPs) per table page, and how many of one visitor's
 // most recent events to send back.
 const PAGE_SIZE = 20;
+
+type ContentType = 'Explainer' | 'Video' | 'Blog';
 const MAX_EVENTS_PER_VISITOR = 200;
 const STATS_SAMPLE = 5000;
 
@@ -127,12 +129,28 @@ export async function GET(request: NextRequest) {
     // Clicks grouped page -> section -> clicked element.
     const clickTree = new Map<string, Map<string, Map<string, { label: string; href: string | null; count: number }>>>();
     let totalClicks = 0;
+    // Content: videos are counted by clicks on them, blogs by views of
+    // their page. Keyed "<type>|<name or slug>".
+    const content = new Map<string, { type: ContentType; key: string; count: number; ips: Set<string> }>();
+    function countContent(type: ContentType, key: string, ip: string) {
+      const id = `${type}|${key}`;
+      let entry = content.get(id);
+      if (!entry) content.set(id, entry = { type, key, count: 0, ips: new Set() });
+      entry.count += 1;
+      entry.ips.add(ip);
+    }
 
     for (const row of sample) {
       const path = pagePath(row.route);
       if (row.event_type === 'click') {
         totalClicks += 1;
-        const { section, label, href } = parseClickTarget(row.target);
+        const { section, label, href, explainer } = parseClickTarget(row.target);
+        if (explainer) countContent('Explainer', explainer.title, row.ip);
+        else {
+          // Video library on /insights: buttons labelled "Play <title>".
+          const video = path === '/insights' ? label.match(/^Play (.+)$/) : null;
+          if (video) countContent('Video', video[1], row.ip);
+        }
         let sections = clickTree.get(path);
         if (!sections) clickTree.set(path, sections = new Map());
         let items = sections.get(section);
@@ -146,8 +164,26 @@ export async function GET(request: NextRequest) {
         if (!entry) pageViews.set(path, entry = { views: 0, ips: new Set() });
         entry.views += 1;
         entry.ips.add(row.ip);
+        const blogSlug = path.match(/^\/insights\/blogs\/([^/]+)$/)?.[1];
+        if (blogSlug && blogSlug !== 'write') countContent('Blog', decodeURIComponent(blogSlug), row.ip);
       }
     }
+
+    // Show blogs by title rather than slug.
+    const blogSlugs = [...content.values()].filter(entry => entry.type === 'Blog').map(entry => entry.key);
+    const blogTitles = new Map<string, string>();
+    if (blogSlugs.length) {
+      const { data: posts } = await supabase.from('blog_posts').select('slug, title').in('slug', blogSlugs);
+      for (const post of posts || []) blogTitles.set(post.slug, post.title);
+    }
+    const contentList = [...content.values()]
+      .map(entry => ({
+        type: entry.type,
+        name: entry.type === 'Blog' ? blogTitles.get(entry.key) || entry.key : entry.key,
+        count: entry.count,
+        visitors: entry.ips.size
+      }))
+      .sort((a, b) => b.count - a.count);
 
     const pages = [...pageViews.entries()]
       .map(([path, entry]) => ({ path, name: pageName(path), views: entry.views, visitors: entry.ips.size }))
@@ -181,6 +217,7 @@ export async function GET(request: NextRequest) {
       totalClicks,
       pages,
       clickPages,
+      content: contentList,
       timeline: buildTimeline(sample, range)
     };
   }
