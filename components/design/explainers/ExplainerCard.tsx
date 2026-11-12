@@ -10,17 +10,44 @@ const HOVER_MS = 1000; // how long the pointer rests on a card before its previe
 const PREVIEW_SECONDS = 10;
 
 const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
-const lessonUrl = (explainer: Explainer) => `${LEARN_URL}/lessons/${explainer.id}`;
+export const lessonUrl = (explainer: Explainer) => `${LEARN_URL}/lessons/${explainer.id}`;
 
-const PlayIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" /></svg>;
+export const PlayIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" /></svg>;
 const EyeIcon = () => <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 5C6.5 5 2.7 9.2 1.5 12c1.2 2.8 5 7 10.5 7s9.3-4.2 10.5-7C21.3 9.2 17.5 5 12 5zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z" /></svg>;
 const HeartIcon = () => <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.4C.4 8.4 2.3 4.5 6 4.5c2.2 0 3.6 1.2 4.5 2.6l1.5 2 1.5-2c.9-1.4 2.3-2.6 4.5-2.6 3.7 0 5.6 3.9 4 7.1C19.5 16.4 12 21 12 21z" /></svg>;
 
-function Counts({ views, likes }: { views: number; likes: number }) {
+// View and like counts, hidden for now; render <Counts> in a card's foot to bring them back
+export function Counts({ views, likes }: { views: number; likes: number }) {
   return <span className="lx-counts">
     <span title={`${views.toLocaleString('en-IN')} views`}><EyeIcon /> {compact.format(views)} views</span>
     <span title={`${likes.toLocaleString('en-IN')} likes`}><HeartIcon /> {compact.format(likes)}</span>
   </span>;
+}
+
+// A Watch button and a plain-text "+ Add to plan", shared by the cards and the hero card
+export function CardActions({ explainer, picked, onToggle, onPointerEnter }: {
+  explainer: Explainer;
+  picked: boolean;
+  onToggle: () => void;
+  onPointerEnter?: () => void;
+}) {
+  return <div className="lx-actions">
+    <a className="lx-watch" href={lessonUrl(explainer)} target="_blank" rel="noopener" data-analytics-action="Watch (button)" onPointerEnter={onPointerEnter}>
+      <PlayIcon />
+      Watch
+    </a>
+    <button
+      className="lx-add"
+      type="button"
+      aria-pressed={picked}
+      aria-label={`${picked ? 'Remove from plan' : 'Add to plan'}: ${explainer.title}`}
+      data-analytics-action={picked ? 'Remove from plan' : 'Add to plan'}
+      onClick={onToggle}
+      onPointerEnter={onPointerEnter}
+    >
+      {picked ? '✓ Added to plan' : '+ Add to plan'}
+    </button>
+  </div>;
 }
 
 // section: where the card sits on the page, so clicks inside the floating
@@ -106,18 +133,7 @@ export function ExplainerCard({ explainer, picked, under, hover, onToggle }: {
       <h4><a href={href} target="_blank" rel="noopener" data-analytics-action="Watch (title)">{explainer.title}</a></h4>
       {explainer.summary && <p>{explainer.summary}</p>}
       <div className="lx-card__foot">
-        <Counts views={explainer.views} likes={explainer.likes} />
-        <button
-          className="lx-card__add"
-          type="button"
-          aria-pressed={picked}
-          aria-label={`${picked ? 'Remove from plan' : 'Add to plan'}: ${explainer.title}`}
-          data-analytics-action={picked ? 'Remove from plan' : 'Add to plan'}
-          onClick={onToggle}
-          onPointerEnter={hover.cancelHover}
-        >
-          {picked ? '✓ Added' : 'Add to plan'}
-        </button>
+        <CardActions explainer={explainer} picked={picked} onToggle={onToggle} onPointerEnter={hover.cancelHover} />
       </div>
     </div>
   </li>;

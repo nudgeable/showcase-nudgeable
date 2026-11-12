@@ -24,9 +24,30 @@ html [data-page] .lx-card__copy p { margin: 0; font-size: 14px; line-height: 1.4
 .lx-counts { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .lx-counts > span { display: inline-flex; align-items: center; gap: 4px; }
 .lx-counts > span:last-child svg { color: #e0218a; }
-.lx-card__add { min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; white-space: nowrap; background: var(--yellow); color: var(--ink); transition: transform .15s; }
-.lx-card__add:hover { transform: scale(1.04); }
-.lx-card__add[aria-pressed="true"] { background: var(--ink); color: #fff; }
+
+.lx-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
+.lx-watch { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 14px 0 11px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 700; white-space: nowrap; text-decoration: none; transition: transform .15s; }
+.lx-watch svg { width: 13px; height: 13px; fill: currentColor; }
+.lx-watch:hover { transform: scale(1.04); }
+.lx-add { min-height: 34px; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; font-size: 14px; font-weight: 700; white-space: nowrap; color: var(--muted); }
+.lx-add:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.lx-add[aria-pressed="true"] { color: var(--ink); }
+
+/* The homepage hero's featured video */
+.lx-hero { width: 100%; max-width: 640px; justify-self: end; overflow: hidden; border-radius: 16px; background: #fff; box-shadow: 0 0 0 1px var(--line), 0 22px 50px rgba(36, 34, 32, .12); transition: box-shadow .15s; }
+.lx-hero__media { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--ink); }
+button.lx-hero__media { width: 100%; padding: 0; border: 0; cursor: pointer; font: inherit; text-align: left; }
+.lx-hero__media video, .lx-hero__media iframe { display: block; width: 100%; height: 100%; border: 0; background: #111; object-fit: contain; }
+.lx-hero__media img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+.lx-hero__media:hover img { transform: scale(1.02); }
+.lx-hero__play { position: absolute; right: 14px; bottom: 14px; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 12px; border-radius: 999px; background: rgba(15, 13, 10, .82); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); color: #fff; font-size: 15px; font-weight: 700; transition: background .15s, transform .15s; }
+.lx-hero__play svg { width: 15px; height: 15px; fill: currentColor; }
+.lx-hero__time { padding-left: 9px; border-left: 1px solid rgba(255, 255, 255, .35); font-weight: 600; font-variant-numeric: tabular-nums; opacity: .9; }
+.lx-hero__media:hover .lx-hero__play { background: var(--ink); transform: scale(1.04); }
+/* .hero-art carries padding from the old hero animation, which showed as a white strip around the video */
+html [data-page] .unified-hero .lx-hero { padding: 0 !important; margin: 0; }
+@media (max-width: 900px) { .lx-hero { justify-self: stretch; max-width: none; } }
+@media (max-width: 520px) { .lx-hero__play { right: 10px; bottom: 10px; padding: 6px 12px 6px 10px; font-size: 14px; } }
 
 .lx-pop { position: fixed; z-index: 60; overflow: hidden; border-radius: 12px; background: #fff; color: var(--ink); box-shadow: 0 24px 60px rgba(36, 34, 32, .28), 0 0 0 1px var(--line); opacity: 0; transform: scale(.72); transition: opacity .18s, transform .18s; }
 .lx-pop.is-open { opacity: 1; transform: none; }
@@ -49,6 +70,6 @@ body .lx-pop__actions .button { min-height: 40px; padding: 8px 14px; font-size: 
 @media (max-width: 860px) { html [data-page] .lx-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 520px) { html [data-page] .lx-grid, .lx-featured { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: reduce) {
-  .lx-card__add:hover, .lx-card:hover .lx-card__play { transform: none; }
+  .lx-watch:hover, .lx-card:hover .lx-card__play, .lx-hero__media:hover img, .lx-hero__media:hover .lx-hero__play { transform: none; }
   .lx-pop { transform: none; transition: none; }
 }

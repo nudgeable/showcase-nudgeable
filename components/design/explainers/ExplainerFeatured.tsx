@@ -1,18 +1,14 @@
 'use client';
 
-import type { ExplainerArea } from '@/lib/learnCatalog';
+import type { Explainer } from '@/lib/learnCatalog';
 import { LEARN_URL } from '@/lib/siteLinks';
 import { ExplainerCard, ExplainerPreview, useHoverPreview } from './ExplainerCard';
 import { FREE_MAX, savePicks, usePicks } from './picks';
 
-// One explainer from each category: the one marked featured in Learn, otherwise the category's first
-export function ExplainerFeatured({ areas }: { areas: ExplainerArea[] }) {
+// The featured explainers after the one in the hero (see featured.ts)
+export function ExplainerFeatured({ cards }: { cards: Explainer[] }) {
   const picks = usePicks();
   const hover = useHoverPreview();
-  const cards = areas.flatMap(area => {
-    const first = area.explainers.find(explainer => explainer.featured) ?? area.explainers[0];
-    return first ? [first] : [];
-  });
 
   function toggle(id: string) {
     if (picks.includes(id)) return savePicks(picks.filter(pick => pick !== id));

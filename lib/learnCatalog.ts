@@ -12,6 +12,7 @@ export type Explainer = {
   duration: string;
   thumbnail: string | null;
   previewUrl: string | null;
+  youTubeId: string | null;
   featured: boolean;
   views: number;
   likes: number;
@@ -62,6 +63,7 @@ function toExplainer(row: LessonRow): Explainer {
     duration: durationLabel(row.source, row.duration_sec),
     thumbnail: id ? `https://i.ytimg.com/vi/${id}/mqdefault.jpg` : row.thumbnail_url,
     previewUrl: row.source === 'hosted' && video ? video : null,
+    youTubeId: id,
     featured: Boolean(row.featured),
     views: row.lesson_stats?.views ?? 0,
     likes: row.lesson_stats?.likes ?? 0

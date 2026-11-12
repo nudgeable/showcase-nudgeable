@@ -1,10 +1,23 @@
 import { HeroAnimation } from '@/components/design/HeroAnimation';
 import { ExplainerFeatured } from '@/components/design/explainers/ExplainerFeatured';
+import { HeroExplainer } from '@/components/design/explainers/HeroExplainer';
+import { featuredExplainers } from '@/components/design/explainers/featured';
+import { WhatsAppPlanForm, type PlanArea } from '@/components/design/WhatsAppPlanForm';
 import { ExplainerPlanner } from '@/components/design/explainers/ExplainerPlanner';
 import type { ExplainerArea } from '@/lib/learnCatalog';
 import { LEARN_URL } from '@/lib/siteLinks';
 
+// The four Learn categories, for the WhatsApp form when the catalogue can't be read
+const DEFAULT_PLAN_AREAS: PlanArea[] = [
+  { key: 'understand', label: 'AI Foundations' },
+  { key: 'daily', label: 'AI at Work' },
+  { key: 'new', label: 'New in AI' },
+  { key: 'research', label: 'AI Research' }
+];
+
 export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
+  const [hero, ...featured] = featuredExplainers(areas);
+  const planAreas = areas.length ? areas.map(({ key, label }) => ({ key, label })) : DEFAULT_PLAN_AREAS;
   return <>
     <section className="hero unified-hero" id="learn" data-analytics-section="Hero">
       <div className="container hero-grid unified-hero-grid">
@@ -46,7 +59,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
           {' '}
         </div>
         {' '}
-        <HeroAnimation className="fluency-animation-art" />
+        {hero ? <HeroExplainer explainer={hero} /> : <HeroAnimation className="fluency-animation-art" />}
       </div>
     </section>
     <section className="clients" aria-label="You’re in good company" data-analytics-section="Client logos">
@@ -109,7 +122,7 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
           <a className="text-link" href={`${LEARN_URL}/`}>{"Explore all explainers "}</a>
         </div>
         {' '}
-        <ExplainerFeatured areas={areas} />
+        <ExplainerFeatured cards={featured} />
       </div>
     </section>
     <section className="planner-section section" id="plan" data-analytics-section="Plan builder">
@@ -262,64 +275,31 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         {' '}
       </div>
     </section>
-    <section className="apply-section" id="apply" data-analytics-section="Nudgeable Apply">
-      {' '}
-      <div className="container">
-        {' '}
-        <div className="apply-grid">
-          {' '}
-          <div className="apply-copy">
-            {' '}
-            <div className="eyebrow">
-              <span className="section-dash" />
-              {" NUDGEABLE APPLY"}
-            </div>
-            {' '}
-            <span className="apply-platform-label">AI-POWERED APPLICATION PLATFORM</span>
-            {' '}
-            <h2>
-              Put your learning
-              <br />
-              {"into "}
-              <span className="serif-word">practice.</span>
-            </h2>
-            {' '}
-            <p>Turn any training into personal actions, timely nudges and one-click progress tracking.</p>
-            {' '}
-            <a className="button" href="/nudgeengine">Explore Nudgeable Apply</a>
-            {' '}
+    <section className="wa-plan section" id="whatsapp-plan" data-analytics-section="WhatsApp plan form">
+      <div className="container wa-plan-grid">
+        <div className="wa-plan-copy">
+          <div className="eyebrow">
+            <span className="section-dash" />
+            {" YOUR FREE 4-WEEK PLAN"}
           </div>
-          {' '}
-          <div className="apply-preview phone-preview" aria-label="Example WhatsApp nudge from Nudgeable Apply">
-            <div className="phone-screen">
-              <div className="phone-status">
-                <span>9:41</span>
-                <span className="phone-camera" aria-hidden="true" />
-                <span aria-hidden="true">▮▮▮ ▰</span>
-              </div>
-              <div className="wa-header">
-                <span className="wa-avatar" aria-hidden="true">n</span>
-                <div>
-                  <strong>Nudgeable Apply</strong>
-                  <span>WhatsApp</span>
-                </div>
-              </div>
-              <div className="wa-chat">
-                <span className="wa-date">Today</span>
-                <div className="wa-bubble">
-                  <span className="wa-example">EXAMPLE NUDGE</span>
-                  <p>In today’s team meeting, invite the quietest member to share their views.</p>
-                  <p className="wa-followup">Give them time to answer. Make space for a new perspective.</p>
-                  <span className="wa-time">9:41 AM</span>
-                  <button id="complete-action" aria-pressed="false" className="button button-outline">✓ Mark complete</button>
-                  <p className="completion-feedback" id="completion-feedback" hidden>One action put into practice.</p>
-                </div>
-              </div>
-              <div className="phone-home" aria-hidden="true" />
-            </div>
+          <h2>
+            Get AI explainers
+            <br />
+            {"on "}
+            <span className="serif-word">WhatsApp.</span>
+          </h2>
+          <p className="wa-plan-lede">Pick your topics or let AI choose for you. We&apos;ll send you one short explainer a day on WhatsApp for 4 weeks.</p>
+          <ol className="wa-plan-steps">
+            <li><b>1</b>Pick your topics.</li>
+            <li><b>2</b>Share your name and WhatsApp number.</li>
+            <li><b>3</b>Get one 3-minute explainer a day.</li>
+          </ol>
+          <div className="wa-plan-track">
+            <strong>Want to track what you&apos;ve watched?</strong>
+            <p>After you join, add your email or sign in with Google to see your own progress page.</p>
           </div>
         </div>
-        {' '}
+        <WhatsAppPlanForm areas={planAreas} />
       </div>
     </section>
     <section className="testimonials section" data-analytics-section="Testimonials">
