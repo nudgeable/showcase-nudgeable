@@ -14,6 +14,7 @@ export function WhatsAppPlanForm({ areas }: { areas: PlanArea[] }) {
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
+  const [requestId, setRequestId] = useState<string | null>(null);
 
   function toggle(key: string) {
     setChosen(now => now.includes(key) ? now.filter(k => k !== key) : [...now, key]);
@@ -32,8 +33,11 @@ export function WhatsAppPlanForm({ areas }: { areas: PlanArea[] }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: name.trim(), phone: phone.replace(/\D/g, ''), areas: chosen, consent })
       });
-      const result = await response.json().catch(() => null) as { ok?: boolean; error?: string } | null;
-      if (result?.ok) setDone(true);
+      const result = await response.json().catch(() => null) as { ok?: boolean; error?: string; requestId?: string | null } | null;
+      if (result?.ok) {
+        setRequestId(result.requestId ?? null);
+        setDone(true);
+      }
       else setError(result?.error || 'Something went wrong. Please try again.');
     } catch {
       setError('Something went wrong. Please check your connection and try again.');
@@ -42,10 +46,13 @@ export function WhatsAppPlanForm({ areas }: { areas: PlanArea[] }) {
     }
   }
 
-  if (done) return <div className="wa-plan-card wa-plan-done" role="status">
-    <span className="wa-plan-done-icon" aria-hidden="true">✓</span>
-    <h3>{`You're in, ${name.trim().split(/\s+/)[0]}.`}</h3>
-    <p>Your free 4-week plan is on its way to your WhatsApp. Explainers come on weekdays at 8:00 AM.</p>
+  if (done) return <div className="wa-plan-card wa-plan-done">
+    <div role="status">
+      <span className="wa-plan-done-icon" aria-hidden="true">✓</span>
+      <h3>{`You're in, ${name.trim().split(/\s+/)[0]}.`}</h3>
+      <p>Your free 4-week plan is on its way to your WhatsApp. Explainers come on weekdays at 8:00 AM.</p>
+    </div>
+    {requestId && <AddEmail requestId={requestId} />}
   </div>;
 
   return <form className="wa-plan-card" onSubmit={submit} noValidate>
@@ -83,6 +90,54 @@ export function WhatsAppPlanForm({ areas }: { areas: PlanArea[] }) {
     <button className="button wa-plan-submit" type="submit" disabled={sending} data-analytics-action="Send plan to WhatsApp">
       {sending ? 'Sending…' : 'Send it to my WhatsApp →'}
     </button>
+    {error && <p className="wa-plan-error" role="alert">{error}</p>}
+  </form>;
+}
+
+// Optional, after "You're in": an email for signing in to Nudgeable Learn (Google with the same email
+// opens the same account) and getting progress by email. WhatsApp works without it.
+function AddEmail({ requestId }: { requestId: string }) {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [sending, setSending] = useState(false);
+  const [saved, setSaved] = useState('');
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const value = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return setError('Please enter a valid email, like asha@gmail.com.');
+    setError('');
+    setSending(true);
+    try {
+      const response = await fetch('/api/learn-signup/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestId, email: value })
+      });
+      const result = await response.json().catch(() => null) as { ok?: boolean; error?: string } | null;
+      if (result?.ok) setSaved(value.toLowerCase());
+      else setError(result?.error || 'Something went wrong. Please try again.');
+    } catch {
+      setError('Something went wrong. Please check your connection and try again.');
+    } finally {
+      setSending(false);
+    }
+  }
+
+  if (saved) return <div className="wa-plan-email wa-plan-email-saved" role="status">
+    <strong>{`✓ Email saved: ${saved}`}</strong>
+    <p>Sign in to Nudgeable Learn with Google using this email to see your progress.</p>
+  </div>;
+
+  return <form className="wa-plan-email" onSubmit={submit} noValidate>
+    <label htmlFor="wa-plan-email-input">
+      <b>Add your email</b> <span>(optional)</span>
+    </label>
+    <p>Sign in to Nudgeable Learn with it to track your progress, and get updates by email. WhatsApp works either way.</p>
+    <div className="wa-plan-email-row">
+      <input id="wa-plan-email-input" type="email" inputMode="email" autoComplete="email" placeholder="asha@gmail.com" value={email} onChange={event => setEmail(event.target.value)} disabled={sending} />
+      <button className="button" type="submit" disabled={sending} data-analytics-action="Add email after sign-up">{sending ? 'Saving…' : 'Save'}</button>
+    </div>
     {error && <p className="wa-plan-error" role="alert">{error}</p>}
   </form>;
 }

@@ -2,22 +2,23 @@ import { HeroAnimation } from '@/components/design/HeroAnimation';
 import { ExplainerFeatured } from '@/components/design/explainers/ExplainerFeatured';
 import { HeroExplainer } from '@/components/design/explainers/HeroExplainer';
 import { featuredExplainers } from '@/components/design/explainers/featured';
-import { WhatsAppPlanForm, type PlanArea } from '@/components/design/WhatsAppPlanForm';
+import { WhatsAppPlanDemo } from '@/components/design/WhatsAppPlanDemo';
+// import { WhatsAppPlanForm, type PlanArea } from '@/components/design/WhatsAppPlanForm';
 import { ExplainerPlanner } from '@/components/design/explainers/ExplainerPlanner';
 import type { ExplainerArea } from '@/lib/learnCatalog';
 import { LEARN_URL } from '@/lib/siteLinks';
 
-// The four Learn categories, for the WhatsApp form when the catalogue can't be read
-const DEFAULT_PLAN_AREAS: PlanArea[] = [
-  { key: 'understand', label: 'AI Foundations' },
-  { key: 'daily', label: 'AI at Work' },
-  { key: 'new', label: 'New in AI' },
-  { key: 'research', label: 'AI Research' }
-];
+// // The four Learn categories, for the WhatsApp form when the catalogue can't be read
+// const DEFAULT_PLAN_AREAS: PlanArea[] = [
+//   { key: 'understand', label: 'AI Foundations' },
+//   { key: 'daily', label: 'AI at Work' },
+//   { key: 'new', label: 'New in AI' },
+//   { key: 'research', label: 'AI Research' }
+// ];
 
 export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
   const [hero, ...featured] = featuredExplainers(areas);
-  const planAreas = areas.length ? areas.map(({ key, label }) => ({ key, label })) : DEFAULT_PLAN_AREAS;
+  // const planAreas = areas.length ? areas.map(({ key, label }) => ({ key, label })) : DEFAULT_PLAN_AREAS;
   return <>
     <section className="hero unified-hero" id="learn" data-analytics-section="Hero">
       <div className="container hero-grid unified-hero-grid">
@@ -138,14 +139,6 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
               <span className="serif-word">learn?</span>
             </h2>
             <p>Choose up to 15 explainers for your free 4-week plan.</p>
-          </div>
-          <div className="ai-plan-callout">
-            <span className="ai-plan-label">A PLAN MADE FOR YOU</span>
-            <a className="button ai-plan-button" href={`${LEARN_URL}/plan/new?ai=1`}>
-              <span aria-hidden="true">✦</span>
-              {" Let AI pick for me"}
-            </a>
-            <span className="ai-plan-detail">Choose your goal. Let AI build your plan.</span>
           </div>
         </div>
         {' '}
@@ -275,6 +268,10 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         {' '}
       </div>
     </section>
+    <WhatsAppPlanDemo />
+    {/* The working WhatsApp sign-up, turned off for now: the demo above stands in for it. To bring it
+        back, put this section back in place of <WhatsAppPlanDemo /> and uncomment the
+        WhatsAppPlanForm import and the plan-area lines at the top of this file.
     <section className="wa-plan section" id="whatsapp-plan" data-analytics-section="WhatsApp plan form">
       <div className="container wa-plan-grid">
         <div className="wa-plan-copy">
@@ -296,12 +293,13 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
           </ol>
           <div className="wa-plan-track">
             <strong>Want to track what you&apos;ve watched?</strong>
-            <p>After you join, add your email or sign in with Google to see your own progress page.</p>
+            <p>After you join, add your email. Then sign in with Google using that email to see your own progress page.</p>
           </div>
         </div>
         <WhatsAppPlanForm areas={planAreas} />
       </div>
     </section>
+    */}
     <section className="testimonials section" data-analytics-section="Testimonials">
       <div className="container">
         <div className="section-heading">

@@ -12,7 +12,6 @@ const PREVIEW_SECONDS = 10;
 const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
 export const lessonUrl = (explainer: Explainer) => `${LEARN_URL}/lessons/${explainer.id}`;
 
-export const PlayIcon = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" /></svg>;
 const EyeIcon = () => <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 5C6.5 5 2.7 9.2 1.5 12c1.2 2.8 5 7 10.5 7s9.3-4.2 10.5-7C21.3 9.2 17.5 5 12 5zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z" /></svg>;
 const HeartIcon = () => <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.4C.4 8.4 2.3 4.5 6 4.5c2.2 0 3.6 1.2 4.5 2.6l1.5 2 1.5-2c.9-1.4 2.3-2.6 4.5-2.6 3.7 0 5.6 3.9 4 7.1C19.5 16.4 12 21 12 21z" /></svg>;
 
@@ -24,7 +23,7 @@ export function Counts({ views, likes }: { views: number; likes: number }) {
   </span>;
 }
 
-// A Watch button and a plain-text "+ Add to plan", shared by the cards and the hero card
+// A yellow "Watch · 1:52" button and a plain-text "+ Add to plan" (the 12 Nov 2026 design)
 export function CardActions({ explainer, picked, onToggle, onPointerEnter }: {
   explainer: Explainer;
   picked: boolean;
@@ -32,9 +31,10 @@ export function CardActions({ explainer, picked, onToggle, onPointerEnter }: {
   onPointerEnter?: () => void;
 }) {
   return <div className="lx-actions">
-    <a className="lx-watch" href={lessonUrl(explainer)} target="_blank" rel="noopener" data-analytics-action="Watch (button)" onPointerEnter={onPointerEnter}>
-      <PlayIcon />
-      Watch
+    <a className="lx-watch" href={lessonUrl(explainer)} target="_blank" rel="noopener" data-analytics-action="Watch (button)" onPointerEnter={onPointerEnter}
+      aria-label={`Watch ${explainer.title}, ${explainer.duration}`}>
+      <i aria-hidden="true" />
+      {`Watch · ${explainer.duration}`}
     </a>
     <button
       className="lx-add"
@@ -126,8 +126,7 @@ export function ExplainerCard({ explainer, picked, under, hover, onToggle }: {
   >
     <a className="lx-card__media" data-analytics-action="Watch (thumbnail)" href={href} target="_blank" rel="noopener" aria-label={`Watch ${explainer.title}`}>
       {explainer.thumbnail ? <img src={explainer.thumbnail} alt="" loading="lazy" /> : <span className="lx-card__blank" />}
-      <span className="lx-card__play"><PlayIcon /></span>
-      <span className="lx-card__time">{explainer.duration}</span>
+      <span className="lx-card__play" aria-hidden="true"><i /></span>
     </a>
     <div className="lx-card__copy">
       <h4><a href={href} target="_blank" rel="noopener" data-analytics-action="Watch (title)">{explainer.title}</a></h4>
