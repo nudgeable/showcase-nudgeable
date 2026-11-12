@@ -1,7 +1,7 @@
 import { LEARN_URL } from '@/lib/siteLinks';
 
 // "Learn on WhatsApp. See your progress." from the 12 Nov 2026 design, as a demo: the fields are
-// switched off (nothing can be typed or sent here), and "Create my free plan" goes to Nudgeable Learn.
+// switched off (nothing can be typed or sent here), and "Create my free plan" goes to Learn's sign-up page.
 // The working sign-up (WhatsAppPlanForm, posting to Learn through /api/learn-signup) is commented out
 // in HomeContent for later.
 
@@ -69,8 +69,8 @@ export function WhatsAppPlanDemo() {
               <span>Send me my plan and explainers on WhatsApp. I can opt out anytime.</span>
             </label>
           </fieldset>
-          {/* The one live control: goes to Nudgeable Learn, where the plan is made */}
-          <a className="wp-submit" href={`${LEARN_URL}/`} data-analytics-action="Create my free plan (to Learn)">Create my free plan →</a>
+          {/* The one live control: sign up on Nudgeable Learn and make the plan there */}
+          <a className="wp-submit" href={`${LEARN_URL}/signup`} data-analytics-action="Create my free plan (to Learn sign-up)">Create my free plan →</a>
         </form>
       </div>
     </div>

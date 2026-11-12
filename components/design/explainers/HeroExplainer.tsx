@@ -1,8 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Explainer } from '@/lib/learnCatalog';
 import { lessonUrl } from './ExplainerCard';
+
+const PLAY_HERO_EVENT = 'nudgeable:play-hero';
+
+// "▶ Watch · 3:04" beside the hero headline: plays the featured video in the card next to it
+export function HeroWatchButton({ duration }: { duration: string }) {
+  return <button className="hero-watch" type="button" data-analytics-action="Watch (hero button)"
+    onClick={() => dispatchEvent(new Event(PLAY_HERO_EVENT))}>
+    <i aria-hidden="true" />{`Watch · ${duration}`}
+  </button>;
+}
 
 // The homepage hero's featured video, as in the 12 Nov 2026 design: a "Most watched" badge, the
 // thumbnail with a yellow "Play 1:52" pill, and the title under it. Play swaps the thumbnail for the
@@ -11,6 +21,16 @@ export function HeroExplainer({ explainer }: { explainer: Explainer }) {
   const [playing, setPlaying] = useState(false);
   const playable = Boolean(explainer.previewUrl || explainer.youTubeId);
   const label = `Play ${explainer.title}, ${explainer.duration}`;
+
+  // The hero's "Watch · 3:04" button (HeroWatchButton) plays this video too
+  useEffect(() => {
+    const play = () => {
+      if (playable) setPlaying(true);
+      else window.open(lessonUrl(explainer), '_blank', 'noopener');
+    };
+    addEventListener(PLAY_HERO_EVENT, play);
+    return () => removeEventListener(PLAY_HERO_EVENT, play);
+  }, [playable, explainer]);
 
   const cover = <>
     {explainer.thumbnail ? <img src={explainer.thumbnail} alt="" /> : <span className="lx-card__blank" />}

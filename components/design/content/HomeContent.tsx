@@ -1,6 +1,6 @@
 import { HeroAnimation } from '@/components/design/HeroAnimation';
 import { ExplainerFeatured } from '@/components/design/explainers/ExplainerFeatured';
-import { HeroExplainer } from '@/components/design/explainers/HeroExplainer';
+import { HeroExplainer, HeroWatchButton } from '@/components/design/explainers/HeroExplainer';
 import { featuredExplainers } from '@/components/design/explainers/featured';
 import { WhatsAppPlanDemo } from '@/components/design/WhatsAppPlanDemo';
 // import { WhatsAppPlanForm, type PlanArea } from '@/components/design/WhatsAppPlanForm';
@@ -25,41 +25,27 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         {' '}
         <div className="hero-copy">
           <div className="eyebrow">
-            <span className="live-dot" />
+            <span className="section-dash" />
             {" A LITTLE LEARNING. A LOT OF POSSIBILITY."}
           </div>
-          {' '}
           <h1 className="unified-hero-title">
             <span className="hero-title-line">Learn AI in</span>
             <span className="hero-title-line"><span className="hero-title-highlight">3 minutes</span></span>
             <span className="hero-title-line">a day.</span>
           </h1>
-          {' '}
-          <p className="hero-description">
-            One explainer a day. Made for you.
-            <br />
-            Delivered to your WhatsApp.
-          </p>
-          {' '}
-          <div className="hero-actions">
-            <a className="button" href="#plan">{"Build my free plan "}</a>
-            <a className="watch-link" href="#featured">
-              <span className="small-play" aria-hidden="true">▶</span>
-              {" Watch an explainer"}
-            </a>
+          <p className="hero-description hero-lead">Short, clear videos on how AI really works. Watch one now. If you like it, get one a day on WhatsApp.</p>
+          <div className="hero-actions hero-watch-row">
+            {hero
+              ? <HeroWatchButton duration={hero.duration} />
+              : <a className="hero-watch" href="#featured"><i aria-hidden="true" />Watch an explainer</a>}
+            <a className="hero-all-link" href="#plan">See all explainers →</a>
           </div>
-          {' '}
-          <div className="hero-note">
-            <span className="tiny-check">✓</span>
-            {" Free 4-week plan "}
-            <span className="note-dot">·</span>
-            {" Set up in 2 minutes "}
-            <span className="note-dot">·</span>
-            {" Build a habit"}
+          <div className="hero-trust">
+            <span><b>Under 5 minutes</b> per video</span>
+            <span><b>2,500+</b> professionals trained</span>
+            <span><b>Free</b> to watch</span>
           </div>
-          {' '}
         </div>
-        {' '}
         {hero ? <HeroExplainer explainer={hero} /> : <HeroAnimation className="fluency-animation-art" />}
       </div>
     </section>
@@ -145,6 +131,38 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         <ExplainerPlanner areas={areas} page="home" />
       </div>
     </section>
+    <WhatsAppPlanDemo />
+    {/* The working WhatsApp sign-up, turned off for now: the demo above stands in for it. To bring it
+        back, put this section back in place of <WhatsAppPlanDemo /> and uncomment the
+        WhatsAppPlanForm import and the plan-area lines at the top of this file.
+    <section className="wa-plan section" id="whatsapp-plan" data-analytics-section="WhatsApp plan form">
+      <div className="container wa-plan-grid">
+        <div className="wa-plan-copy">
+          <div className="eyebrow">
+            <span className="section-dash" />
+            {" YOUR FREE 4-WEEK PLAN"}
+          </div>
+          <h2>
+            Get AI explainers
+            <br />
+            {"on "}
+            <span className="serif-word">WhatsApp.</span>
+          </h2>
+          <p className="wa-plan-lede">Pick your topics or let AI choose for you. We&apos;ll send you one short explainer a day on WhatsApp for 4 weeks.</p>
+          <ol className="wa-plan-steps">
+            <li><b>1</b>Pick your topics.</li>
+            <li><b>2</b>Share your name and WhatsApp number.</li>
+            <li><b>3</b>Get one 3-minute explainer a day.</li>
+          </ol>
+          <div className="wa-plan-track">
+            <strong>Want to track what you&apos;ve watched?</strong>
+            <p>After you join, add your email. Then sign in with Google using that email to see your own progress page.</p>
+          </div>
+        </div>
+        <WhatsAppPlanForm areas={planAreas} />
+      </div>
+    </section>
+    */}
     <section className="training section" id="training" data-analytics-section="AI masterclasses">
       <div className="container">
         <div className="section-heading">
@@ -268,38 +286,6 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
         {' '}
       </div>
     </section>
-    <WhatsAppPlanDemo />
-    {/* The working WhatsApp sign-up, turned off for now: the demo above stands in for it. To bring it
-        back, put this section back in place of <WhatsAppPlanDemo /> and uncomment the
-        WhatsAppPlanForm import and the plan-area lines at the top of this file.
-    <section className="wa-plan section" id="whatsapp-plan" data-analytics-section="WhatsApp plan form">
-      <div className="container wa-plan-grid">
-        <div className="wa-plan-copy">
-          <div className="eyebrow">
-            <span className="section-dash" />
-            {" YOUR FREE 4-WEEK PLAN"}
-          </div>
-          <h2>
-            Get AI explainers
-            <br />
-            {"on "}
-            <span className="serif-word">WhatsApp.</span>
-          </h2>
-          <p className="wa-plan-lede">Pick your topics or let AI choose for you. We&apos;ll send you one short explainer a day on WhatsApp for 4 weeks.</p>
-          <ol className="wa-plan-steps">
-            <li><b>1</b>Pick your topics.</li>
-            <li><b>2</b>Share your name and WhatsApp number.</li>
-            <li><b>3</b>Get one 3-minute explainer a day.</li>
-          </ol>
-          <div className="wa-plan-track">
-            <strong>Want to track what you&apos;ve watched?</strong>
-            <p>After you join, add your email. Then sign in with Google using that email to see your own progress page.</p>
-          </div>
-        </div>
-        <WhatsAppPlanForm areas={planAreas} />
-      </div>
-    </section>
-    */}
     <section className="testimonials section" data-analytics-section="Testimonials">
       <div className="container">
         <div className="section-heading">
@@ -356,6 +342,23 @@ export function HomeContent({ areas }: { areas: ExplainerArea[] }) {
               </span>
             </figcaption>
           </figure>
+        </div>
+      </div>
+    </section>
+    <section className="ab-band" id="apply" data-analytics-section="Nudgeable Apply">
+      <div className="container ab-grid">
+        <div className="ab-icon" aria-hidden="true">n</div>
+        <div>
+          <div className="eyebrow">
+            <span className="section-dash" />
+            {" AFTER THE TRAINING"}
+          </div>
+          <h2>Nudgeable Apply</h2>
+          <p>Put your learning into practice. Turn any training into personal actions, timely nudges and one-click progress tracking on WhatsApp.</p>
+        </div>
+        <div className="ab-ctas">
+          <a className="ab-button" href="/nudgeengine">Explore Nudgeable Apply →</a>
+          <a className="ab-sub" href="#contact" data-interest="Nudgeable Apply">or talk to us about it</a>
         </div>
       </div>
     </section>
