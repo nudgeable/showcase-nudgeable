@@ -32,7 +32,6 @@ interface Stats {
 interface ContentItem {
   type: 'Explainer' | 'Video' | 'Blog';
   name: string;
-  count: number;
   visitors: number;
 }
 
@@ -44,7 +43,7 @@ function plural(count: number, word: string) {
   return `${count} ${word}${count === 1 ? '' : 's'}`;
 }
 
-/** Videos and blogs by name: clicked (videos) or viewed (blogs), and by how many people. */
+/** Videos and blogs by name, with how many distinct visitors opened each. */
 function ContentCard({ items }: { items: ContentItem[] }) {
   const [filter, setFilter] = useState<ContentFilter>('all');
   const [page, setPage] = useState(1);
@@ -57,7 +56,7 @@ function ContentCard({ items }: { items: ContentItem[] }) {
     <div className="analytics-clicks-head">
       <div>
         <strong>Content</strong>
-        <span>Videos clicked and blogs viewed.</span>
+        <span>Visitors per video and blog.</span>
       </div>
       <div className="analytics-sort" role="group" aria-label="Show content">
         {(['all', 'videos', 'blogs'] as const).map(value => (
@@ -70,17 +69,11 @@ function ContentCard({ items }: { items: ContentItem[] }) {
     <ul className="analytics-content-list">
       {shown.map(item => (
         <li key={`${item.type}|${item.name}`}>
-          <span className="analytics-item-label">
-            {item.name}
-            <small>{item.type === 'Blog' ? 'Blog' : item.type === 'Explainer' ? 'Explainer video' : 'Video'}</small>
-          </span>
-          <span className="analytics-content-count">
-            {plural(item.count, item.type === 'Blog' ? 'view' : 'click')}
-            <small>{plural(item.visitors, 'visitor')}</small>
-          </span>
+          <span className="analytics-item-label">{item.name}</span>
+          <span className="analytics-content-count">{plural(item.visitors, 'visitor')}</span>
         </li>
       ))}
-      {!shown.length && <li className="analytics-empty">{filter === 'blogs' ? 'No blog views yet.' : filter === 'videos' ? 'No video clicks yet.' : 'No videos clicked or blogs viewed yet.'}</li>}
+      {!shown.length && <li className="analytics-empty">{filter === 'blogs' ? 'No blog visitors yet.' : filter === 'videos' ? 'No video visitors yet.' : 'No video or blog visitors yet.'}</li>}
     </ul>
     {pageCount > 1 && <div className="analytics-content-pagination">
       <button type="button" className="button button-secondary" disabled={current <= 1} onClick={() => setPage(current - 1)}>Previous</button>

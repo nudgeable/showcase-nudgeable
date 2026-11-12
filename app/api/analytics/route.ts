@@ -32,7 +32,11 @@ interface TimelineBucket {
   key: string;
   label: string;
   visitors: number;
+  videoVisitors: number;
+  blogVisitors: number;
 }
+
+type ContentKind = 'video' | 'blog';
 
 // Buckets the chart into hours (24h range) or days (everything else, capped
 // at 30 buckets so "all time" still renders a readable trend rather than an
@@ -40,7 +44,13 @@ interface TimelineBucket {
 // counts -- and only over whatever the caller has already filtered the
 // sample down to (event type / route / IP / range), so the chart always
 // matches what the stat cards and table are currently showing.
-function buildTimeline(sample: { ip: string; created_at: string }[], range: string | null): TimelineBucket[] {
+// videoVisitors / blogVisitors count the distinct IPs that opened a video
+// (or explainer) or viewed a blog post in that bucket.
+function buildTimeline(
+  sample: { ip: string; created_at: string }[],
+  contentRows: { ip: string; created_at: string; kind: ContentKind }[],
+  range: string | null
+): TimelineBucket[] {
   const hourly = range === '24h';
   const bucketCount = range && range in RANGE_HOURS ? RANGE_HOURS[range] / (hourly ? 1 : 24) : 30;
   const now = new Date();
@@ -59,6 +69,8 @@ function buildTimeline(sample: { ip: string; created_at: string }[], range: stri
   const bucketOrder: string[] = [];
   const bucketLabels = new Map<string, string>();
   const bucketIps = new Map<string, Set<string>>();
+  const bucketVideoIps = new Map<string, Set<string>>();
+  const bucketBlogIps = new Map<string, Set<string>>();
   for (let i = bucketCount - 1; i >= 0; i -= 1) {
     const date = new Date(now);
     if (hourly) date.setHours(date.getHours() - i, 0, 0, 0);
@@ -67,6 +79,8 @@ function buildTimeline(sample: { ip: string; created_at: string }[], range: stri
     bucketOrder.push(key);
     bucketLabels.set(key, bucketLabel(date));
     bucketIps.set(key, new Set());
+    bucketVideoIps.set(key, new Set());
+    bucketBlogIps.set(key, new Set());
   }
 
   for (const row of sample) {
@@ -76,10 +90,17 @@ function buildTimeline(sample: { ip: string; created_at: string }[], range: stri
     ips.add(row.ip);
   }
 
+  for (const row of contentRows) {
+    const key = bucketKey(new Date(row.created_at));
+    (row.kind === 'video' ? bucketVideoIps : bucketBlogIps).get(key)?.add(row.ip);
+  }
+
   return bucketOrder.map(key => ({
     key,
     label: bucketLabels.get(key) || key,
-    visitors: bucketIps.get(key)?.size || 0
+    visitors: bucketIps.get(key)?.size || 0,
+    videoVisitors: bucketVideoIps.get(key)?.size || 0,
+    blogVisitors: bucketBlogIps.get(key)?.size || 0
   }));
 }
 
@@ -132,12 +153,15 @@ export async function GET(request: NextRequest) {
     // Content: videos are counted by clicks on them, blogs by views of
     // their page. Keyed "<type>|<name or slug>".
     const content = new Map<string, { type: ContentType; key: string; count: number; ips: Set<string> }>();
-    function countContent(type: ContentType, key: string, ip: string) {
+    // Every video/blog event, for the video and blog lines on the chart.
+    const contentRows: { ip: string; created_at: string; kind: ContentKind }[] = [];
+    function countContent(type: ContentType, key: string, row: { ip: string; created_at: string }) {
       const id = `${type}|${key}`;
       let entry = content.get(id);
       if (!entry) content.set(id, entry = { type, key, count: 0, ips: new Set() });
       entry.count += 1;
-      entry.ips.add(ip);
+      entry.ips.add(row.ip);
+      contentRows.push({ ip: row.ip, created_at: row.created_at, kind: type === 'Blog' ? 'blog' : 'video' });
     }
 
     for (const row of sample) {
@@ -145,11 +169,11 @@ export async function GET(request: NextRequest) {
       if (row.event_type === 'click') {
         totalClicks += 1;
         const { section, label, href, explainer } = parseClickTarget(row.target);
-        if (explainer) countContent('Explainer', explainer.title, row.ip);
+        if (explainer) countContent('Explainer', explainer.title, row);
         else {
           // Video library on /insights: buttons labelled "Play <title>".
           const video = path === '/insights' ? label.match(/^Play (.+)$/) : null;
-          if (video) countContent('Video', video[1], row.ip);
+          if (video) countContent('Video', video[1], row);
         }
         let sections = clickTree.get(path);
         if (!sections) clickTree.set(path, sections = new Map());
@@ -165,7 +189,7 @@ export async function GET(request: NextRequest) {
         entry.views += 1;
         entry.ips.add(row.ip);
         const blogSlug = path.match(/^\/insights\/blogs\/([^/]+)$/)?.[1];
-        if (blogSlug && blogSlug !== 'write') countContent('Blog', decodeURIComponent(blogSlug), row.ip);
+        if (blogSlug && blogSlug !== 'write') countContent('Blog', decodeURIComponent(blogSlug), row);
       }
     }
 
@@ -180,10 +204,9 @@ export async function GET(request: NextRequest) {
       .map(entry => ({
         type: entry.type,
         name: entry.type === 'Blog' ? blogTitles.get(entry.key) || entry.key : entry.key,
-        count: entry.count,
         visitors: entry.ips.size
       }))
-      .sort((a, b) => b.count - a.count);
+      .sort((a, b) => b.visitors - a.visitors);
 
     const pages = [...pageViews.entries()]
       .map(([path, entry]) => ({ path, name: pageName(path), views: entry.views, visitors: entry.ips.size }))
@@ -218,7 +241,7 @@ export async function GET(request: NextRequest) {
       pages,
       clickPages,
       content: contentList,
-      timeline: buildTimeline(sample, range)
+      timeline: buildTimeline(sample, contentRows, range)
     };
   }
 
