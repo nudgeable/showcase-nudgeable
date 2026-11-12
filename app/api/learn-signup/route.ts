@@ -23,8 +23,9 @@ export async function POST(request: NextRequest) {
       cache: 'no-store',
       signal: AbortSignal.timeout(15_000)
     });
-    const result = await response.json().catch(() => null) as { ok?: boolean; error?: string } | null;
-    if (response.ok && result?.ok) return NextResponse.json({ ok: true });
+    const result = await response.json().catch(() => null) as { ok?: boolean; error?: string; requestId?: string } | null;
+    // requestId lets the visitor add an optional email right after (/api/learn-signup/email)
+    if (response.ok && result?.ok) return NextResponse.json({ ok: true, requestId: result.requestId ?? null });
     // Learn's 400 and 429 messages are written for the visitor; anything else gets a general one
     const shown = (response.status === 400 || response.status === 429) && result?.error;
     if (!shown) console.error('Learn sign-up failed', response.status, result?.error);

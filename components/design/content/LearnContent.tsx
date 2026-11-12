@@ -226,14 +226,6 @@ export function LearnContent({ areas }: { areas: ExplainerArea[] }) {
             </h2>
             <p>Choose up to 15 explainers for your free 4-week plan.</p>
           </div>
-          <div className="ai-plan-callout">
-            <span className="ai-plan-label">A PLAN MADE FOR YOU</span>
-            <a className="button ai-plan-button" href={`${LEARN_URL}/plan/new?ai=1`}>
-              <span aria-hidden="true">✦</span>
-              {" Let AI pick for me"}
-            </a>
-            <span className="ai-plan-detail">Choose your goal. Let AI build your plan.</span>
-          </div>
         </div>
         {' '}
         <ExplainerPlanner areas={areas} page="learn" />
