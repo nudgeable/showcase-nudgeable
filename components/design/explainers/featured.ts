@@ -1,8 +1,8 @@
 import type { Explainer, ExplainerArea } from '@/lib/learnCatalog';
 
-// The explainer shown in the homepage hero ("Why Use Sarvam When ChatGPT Exists?"), when it's featured
+// The explainer shown in the homepage hero ("Nvidia Didn't Get Lucky"), when it's featured
 // and published in Learn. Otherwise the first featured explainer takes its place.
-const HERO_EXPLAINER_ID = 'ae61aa2c-4bd8-c3d2-3ffe-6bc2a52e20da';
+const HERO_EXPLAINER_ID = 'da1dee8f-1146-4ef8-a080-ae4fbd8921a7';
 
 // The explainers marked featured in Learn, in category order and then Learn's position order,
 // with the hero explainer moved to the front. The first one leads the homepage hero; the rest
